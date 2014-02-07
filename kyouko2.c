@@ -98,6 +98,7 @@ static int kyouko2_probe(struct pci_dev *pci_dev, const struct pci_device_id *pc
 	kyouko2_info.p_fb_base = pci_resource_start(pci_dev, 2);
 	pci_enable_dev(pci_dev);
 	pci_set_master(pci_dev);
+	return 0;
 }
 
 static int kyouko2_remove(){}
