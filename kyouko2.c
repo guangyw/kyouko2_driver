@@ -41,38 +41,38 @@ struct pci_device_id kyouko2_dev_ids[] = {
 	{0}
 };
 
-struct kyouko2_info {
+struct kyouko2{
 	unsigned long p_control_base;
 	unsigned long p_fb_base;
 	unsigned int *k_control_base;
 	unsigned int *k_fb_base;
 	pci_dev *pci_dev;
-}
+}kyouko2;
 
 unsigned int K_READ_REG(unsigned int reg){
 	unsigned int value;
-	value = *(kyouko2_info.k_control_base + (reg>>2));
+	value = *(kyouko2.k_control_base + (reg>>2));
 	return value;
 }
 
 void K_WRITE_REG(unsigned int reg, unsigned int value){
 	udelay(1);
-	*(kyouko2_info.k_control_base + (reg>>2)) = value;
+	*(kyouko2.k_control_base + (reg>>2)) = value;
 }
 
 static int kyouko2_open(struct inode *inode, struct file *filp){
 	unsigned int ramSize;
 	printk(KERN_ALERT "opened device");
-	kyouko2_info.k_control_base = ioremap_nocache(kyouko2_info.p_control_base, CONTROL_SIZE);
+	kyouko2.k_control_base = ioremap_nocache(kyouko2.p_control_base, CONTROL_SIZE);
 	ramSize = K_READ_REG(Device_RAM);
 	printk(KERN_ALEAT "ramSize is %d MB",ramSize);
 	ramSize *= (1024*1024);
-	kyouko2_info.k_fb_base = ioremap_nocache(kyouko2_info.p_fb_base, ramSize);
+	kyouko2.k_fb_base = ioremap_nocache(kyouko2.p_fb_base, ramSize);
 	return 0;
 }
 
 static int kyouko2_mmap(stuct file *filp, struct vm_area_struct *vma){
-	io_remap_pfn_range(vma, vma->start, kyouko2_info.p_control_base>>PAGE_SHIFT, vma->vm_end - vma->vm_start, vma->vm_page_prot);
+	io_remap_pfn_range(vma, vma->start, kyouko2.p_control_base>>PAGE_SHIFT, vma->vm_end - vma->vm_start, vma->vm_page_prot);
 }
 
 static int kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
@@ -93,9 +93,9 @@ struct file_operations kyouko2_fops = {
 };
 
 static int kyouko2_probe(struct pci_dev *pci_dev, const struct pci_device_id *pci_id){
-	kyouko2_info.pci_dev = pci_dev;
-	kyouko2_info.p_control_base = pci_resource_start(pci_dev, 1);
-	kyouko2_info.p_fb_base = pci_resource_start(pci_dev, 2);
+	kyouko2.pci_dev = pci_dev;
+	kyouko2.p_control_base = pci_resource_start(pci_dev, 1);
+	kyouko2.p_fb_base = pci_resource_start(pci_dev, 2);
 	pci_enable_dev(pci_dev);
 	pci_set_master(pci_dev);
 	return 0;
