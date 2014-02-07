@@ -90,7 +90,7 @@ struct file_operations kyouko2_fops = {
 	.owner = THIS_MODULE,
 	.unlocked_ioctl = kyouko2_ioctl,
 	.mmap = kyouko2_mmap
-}
+};
 
 static int kyouko2_probe(struct pci_dev *pci_dev, const struct pci_device_id *pci_id){
 	kyouko2_info.pci_dev = pci_dev;
