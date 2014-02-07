@@ -75,11 +75,11 @@ static int kyouko2_mmap(stuct file *filp, struct vm_area_struct *vma){
 	io_remap_pfn_range(vma, vma->start, kyouko2_info.p_control_base>>PAGE_SHIFT, vma->vm_end - vma->vm_start, vma->vm_page_prot);
 }
 
-static int kyouko2_ioctl(){
-
+static int kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
+	return 0;
 }
 
-static int kyouko2_release(){
+static int kyouko2_release(void){
 	//write 1 to reboot register
 	return 0;
 }
@@ -101,7 +101,7 @@ static int kyouko2_probe(struct pci_dev *pci_dev, const struct pci_device_id *pc
 	return 0;
 }
 
-static int kyouko2_remove(){}
+void kyouko2_remove(void){}
 
 struct pci_driver kyouko2_pci_drv = {
 	.name = "kyouko2_drv",
@@ -112,7 +112,7 @@ struct pci_driver kyouko2_pci_drv = {
 
 
 struct cdev kyouko2_cdev;
-static int kyouko2_init(){
+static int kyouko2_init(void){
 	cdev_init(&kyouko2_cdev, &kyouko2_fops);
 	kyouko2_cdev.owner = THIS_MODULE;
 	cdev_add(&kyouko2_cdev, MKDEV(DEV_MAJOR, DEV_MINOR), 1);
@@ -120,7 +120,7 @@ static int kyouko2_init(){
 	return 0;
 }
 
-static int kyouko2_exit(){
+static int kyouko2_exit(void){
 	pci_unregister_driver(&kyouko2_pci_drv);
 	cdev_del(&kyouko2_cdev);
 	return 0;
