@@ -1,4 +1,3 @@
-
 obj-m += kyouko2.o
 
 default:
