@@ -114,13 +114,13 @@ struct cdev kyouko2_cdev;
 static int kyouko2_init(){
 	cdev_init(&kyouko2_cdev, &kyouko2_fops);
 	kyouko2_cdev.owner = THIS_MODULE;
-	cdev_add(&kyouko2_cdev, MKDEV(DEV_MAJOR, DEV_MINOR, 1));
+	cdev_add(&kyouko2_cdev, MKDEV(DEV_MAJOR, DEV_MINOR), 1);
 	pci_register_driver(&kyouko2_pci_drv);
 	return 0;
 }
 
 static int kyouko2_exit(){
-	pci_unregister_driver();
+	pci_unregister_driver(&kyouko2_pci_drv);
 	cdev_del(&kyouko2_cdev);
 	return 0;
 }
