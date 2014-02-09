@@ -41,7 +41,7 @@ struct pci_device_id kyouko2_dev_ids[] = {
 	{0}
 };
 
-struct kyouko{
+static struct kyouko{
 	unsigned long p_control_base;
 	unsigned long p_fb_base;
 	unsigned int *k_control_base;
@@ -102,7 +102,7 @@ static int kyouko2_probe(struct pci_dev *pci_dev, const struct pci_device_id *pc
 	return 0;
 }
 
-void kyouko2_remove(void){}
+void kyouko2_remove(struct pci_dev *pci_dev){}
 
 struct pci_driver kyouko2_pci_drv = {
 	.name = "kyouko2_drv",
