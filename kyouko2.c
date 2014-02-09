@@ -28,8 +28,8 @@
 #include <linux/sched.h>
 #include <linux/mm.h>
 
-#define	PCI_VENDOR_ID 0x1234			/*  */
-#define	PCI_DEVICE_ID 0x1113			/*  */
+//#define	PCI_VENDOR_ID 0x1234			/*  */
+//#define	PCI_DEVICE_ID 0x1113			/*  */
 #define	DEV_MAJOR 500			/*  */
 #define	DEV_MINOR 127			/*  */
 #define	CONTROL_SIZE 65536			/*  */
@@ -40,7 +40,7 @@ MODULE_LICENSE("Proprietary");
 MODULE_AUTHOR("Guangyan Wang");
 
 struct pci_device_id kyouko2_dev_ids[] = {
-	{PCI.DEVICE(PCI_VENDOR_ID, PCI_DEVICEID)},
+	{PCI_DEVICE(0x1234, 0x1113)},
 	{0}
 };
 
