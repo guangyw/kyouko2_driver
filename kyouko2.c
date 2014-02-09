@@ -76,7 +76,7 @@ int kyouko2_mmap(stuct file *filp, struct vm_area_struct *vma){
 	return 0;
 }
 
-int kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
+long kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
 	return 0;
 }
 
