@@ -30,7 +30,7 @@ struct u_kyouko2_device {
 #define	Device_Ram (0x0020)			/*  */
 
 unsigned int U_READ_REG(unsigned int reg){
-	return (*(u_control_base + (reg>>2)));
+	return (*(kyouko2.u_control_base + (reg>>2)));
 }
 
 int main(){
