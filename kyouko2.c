@@ -124,7 +124,7 @@ long kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
 					sync();
 				//modeset
 				//commented off for debugging
-				//K_WRITE_REG(CFG_MODESET,1);
+					K_WRITE_REG(CFG_MODESET,1);
 				//write to clear buffer reg
 					K_WRITE_REG(CLEAR_COLOR4F, 0x3F000000);
 					K_WRITE_REG(CLEAR_COLOR4F + 4, 0x3F000000);
@@ -139,7 +139,7 @@ long kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
 					break;
 				case GRAPHICS_OFF:
 					printk(KERN_ALERT "Turning off graphic mode");
-					sync();
+					//sync();
 					K_WRITE_REG(CFG_REBOOT, 1);
 					break;
 				default:
