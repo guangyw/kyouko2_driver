@@ -23,5 +23,5 @@
 #define START_DMA _IOW(0xCC, 2, unsigned long)
 #define SYNC _IO(0xCC, 3)
 
-#define GRAPHICS_ON _IO(0xCC, 4)
-#define GRAPHICS_OFF _IO(0xCC, 5)
+#define GRAPHICS_ON 1
+#define GRAPHICS_OFF 0
