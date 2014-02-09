@@ -102,43 +102,49 @@ void sync(void){
 long kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
 	switch(cmd){
 		case VMODE:
-			if(((int)(arg)) == GRAPHICS_ON){
-				printk(KERN_ALERT "Graphics on \n");
+			switch(arg){
+				case GRAPHICS_ON:
+					printk(KERN_ALERT "Graphics on \n");
 				//set frame 0
-				K_WRITE_REG(0x8000 + FRM_COLUMNS, 1024);
-				K_WRITE_REG(0x8000 + FRM_ROWS, 768);
-				K_WRITE_REG(0x8000 + FRM_ROW_PITCH, 1024*4);
-				K_WRITE_REG(0x8000 + FRM_PIXEL_FORMAT, 0xF888);
-				K_WRITE_REG(0x8000 + FRM_START_ADDRESS, 0);
+					K_WRITE_REG(0x8000 + FRM_COLUMNS, 1024);
+					K_WRITE_REG(0x8000 + FRM_ROWS, 768);
+					K_WRITE_REG(0x8000 + FRM_ROW_PITCH, 1024*4);
+					K_WRITE_REG(0x8000 + FRM_PIXEL_FORMAT, 0xF888);
+					K_WRITE_REG(0x8000 + FRM_START_ADDRESS, 0);
 
 				//set dac 0
-				K_WRITE_REG(0x9000,1024);
-				K_WRITE_REG(0x9000 + 4, 768);
-				K_WRITE_REG(0x9000 + 8, 0);
-				K_WRITE_REG(0x9000 + 12, 0);
-				K_WRITE_REG(0x9000 + 16, 0);
+					K_WRITE_REG(0x9000,1024);
+					K_WRITE_REG(0x9000 + 4, 768);
+					K_WRITE_REG(0x9000 + 8, 0);
+					K_WRITE_REG(0x9000 + 12, 0);
+					K_WRITE_REG(0x9000 + 16, 0);
 
 				//set acceleration
-				K_WRITE_REG(CFG_ACCELERATION, 0x40000000);
-				sync();
+					K_WRITE_REG(CFG_ACCELERATION, 0x40000000);
+					sync();
 				//modeset
 				//commented off for debugging
 				//K_WRITE_REG(CFG_MODESET,1);
 				//write to clear buffer reg
-				K_WRITE_REG(CLEAR_COLOR4F, 0x3F000000);
-				K_WRITE_REG(CLEAR_COLOR4F + 4, 0x3F000000);
-				K_WRITE_REG(CLEAR_COLOR4F + 8, 0x3F000000);
-				K_WRITE_REG(CLEAR_COLOR4F + 12, 0x3F800000);
+					K_WRITE_REG(CLEAR_COLOR4F, 0x3F000000);
+					K_WRITE_REG(CLEAR_COLOR4F + 4, 0x3F000000);
+					K_WRITE_REG(CLEAR_COLOR4F + 8, 0x3F000000);
+					K_WRITE_REG(CLEAR_COLOR4F + 12, 0x3F800000);
 
 				//flush
-				K_WRITE_REG(RASTER_FLUSH, 1);
-				sync();
+					K_WRITE_REG(RASTER_FLUSH, 1);
+					sync();
 				//write 1 to clear buffer reg
-				K_WRITE_REG(RASTER_CLEAR, 1);
-			}else{
-				printk(KERN_ALERT "Turning off graphic mode");
-				sync();
-				K_WRITE_REG(CFG_REBOOT, 1);
+					K_WRITE_REG(RASTER_CLEAR, 1);
+					break;
+				case GRAPHICS_OFF:
+					printk(KERN_ALERT "Turning off graphic mode");
+					sync();
+					K_WRITE_REG(CFG_REBOOT, 1);
+					break;
+				default:
+					printk(KERN_ALERT "Argument not found");
+					break;
 			}
 			break;
 		case SYNC:
