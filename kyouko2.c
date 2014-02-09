@@ -83,7 +83,7 @@ long kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
 	return 0;
 }
 
-int kyouko2_release(void){
+int kyouko2_release(struct inode * inode, struct file *filp){
 	//write 1 to reboot register
 	return 0;
 }
