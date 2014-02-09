@@ -76,7 +76,7 @@ int kyouko2_open(struct inode *inode, struct file *filp){
 }
 
 int kyouko2_mmap(struct file *filp, struct vm_area_struct *vma){
-	io_remap_pfn_range(vma, vma->start, kyouko2.p_control_base>>PAGE_SHIFT, vma->vm_end - vma->vm_start, vma->vm_page_prot);
+	io_remap_pfn_range(vma, vma->vm_start, kyouko2.p_control_base>>PAGE_SHIFT, vma->vm_end - vma->vm_start, vma->vm_page_prot);
 	return 0;
 }
 
@@ -101,7 +101,7 @@ static int kyouko2_probe(struct pci_dev *pci_dev, const struct pci_device_id *pc
 	kyouko2.pci_dev = pci_dev;
 	kyouko2.p_control_base = pci_resource_start(pci_dev, 1);
 	kyouko2.p_fb_base = pci_resource_start(pci_dev, 2);
-	pci_enable_dev(pci_dev);
+	pci_enable_device(pci_dev);
 	pci_set_master(pci_dev);
 	return 0;
 }
