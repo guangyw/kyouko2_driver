@@ -28,6 +28,9 @@
 #include <linux/sched.h>
 #include <linux/mm.h>
 
+#include "kyouko2_ioctl.h"
+#include "kyouko2_reg.h"
+
 //#define	PCI_VENDOR_ID 0x1234			/*  */
 //#define	PCI_DEVICE_ID 0x1113			/*  */
 #define	DEV_MAJOR 500			/*  */
