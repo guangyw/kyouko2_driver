@@ -68,7 +68,7 @@ int kyouko2_open(struct inode *inode, struct file *filp){
 	printk(KERN_ALERT "opened device");
 	kyouko2.k_control_base = ioremap_nocache(kyouko2.p_control_base, CONTROL_SIZE);
 	ramSize = K_READ_REG(Device_RAM);
-	printk(KERN_ALEAT "ramSize is %d MB",ramSize);
+	printk(KERN_ALERT "ramSize is %d MB",ramSize);
 	ramSize *= (1024*1024);
 	kyouko2.k_fb_base = ioremap_nocache(kyouko2.p_fb_base, ramSize);
 	return 0;
@@ -128,7 +128,6 @@ static int kyouko2_init(void){
 static void kyouko2_exit(void){
 	pci_unregister_driver(&kyouko2_pci_drv);
 	cdev_del(&kyouko2_cdev);
-	return 0;
 }
 
 module_init(kyouko2_init);
