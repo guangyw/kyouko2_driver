@@ -41,7 +41,7 @@ struct pci_device_id kyouko2_dev_ids[] = {
 	{0}
 };
 
-struct kyouko2{
+struct kyouko{
 	unsigned long p_control_base;
 	unsigned long p_fb_base;
 	unsigned int *k_control_base;
@@ -73,6 +73,7 @@ static int kyouko2_open(struct inode *inode, struct file *filp){
 
 static int kyouko2_mmap(stuct file *filp, struct vm_area_struct *vma){
 	io_remap_pfn_range(vma, vma->start, kyouko2.p_control_base>>PAGE_SHIFT, vma->vm_end - vma->vm_start, vma->vm_page_prot);
+	return 0;
 }
 
 static int kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
