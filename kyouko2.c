@@ -35,7 +35,6 @@
 #define	CONTROL_SIZE 65536			/*  */
 #define	Device_RAM 0x0020			/*  */
 
-j
 
 MODULE_LICENSE("Proprietary");
 MODULE_AUTHOR("Guangyan Wang");
@@ -118,14 +117,15 @@ struct pci_driver kyouko2_pci_drv = {
 
 struct cdev kyouko2_cdev;
 static int kyouko2_init(void){
+	int flag;
 	cdev_init(&kyouko2_cdev, &kyouko2_fops);
 	kyouko2_cdev.owner = THIS_MODULE;
 	cdev_add(&kyouko2_cdev, MKDEV(DEV_MAJOR, DEV_MINOR), 1);
-	pci_register_driver(&kyouko2_pci_drv);
+	flag = pci_register_driver(&kyouko2_pci_drv);
 	return 0;
 }
 
-static int kyouko2_exit(void){
+static void kyouko2_exit(void){
 	pci_unregister_driver(&kyouko2_pci_drv);
 	cdev_del(&kyouko2_cdev);
 	return 0;
