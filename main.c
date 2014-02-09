@@ -23,7 +23,7 @@
 #include <sys/mman.h>
 
 struct u_kyouko2_device {
-	unsigned int *u_controal_base;
+	unsigned int *u_control_base;
 }kyouko2;
 
 #define	KYOUKO_CONTROL_SIZE (65536)			/*  */
