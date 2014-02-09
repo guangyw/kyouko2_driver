@@ -122,7 +122,8 @@ long kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
 				K_WRITE_REG(CFG_ACCELERATION, 0x40000000);
 				sync();
 				//modeset
-				K_WRITE_REG(CFG_MODESET,1);
+				//commented off for debugging
+				//K_WRITE_REG(CFG_MODESET,1);
 				//write to clear buffer reg
 				K_WRITE_REG(CLEAR_COLOR4F, 0x3F000000);
 				K_WRITE_REG(CLEAR_COLOR4F + 4, 0x3F000000);
