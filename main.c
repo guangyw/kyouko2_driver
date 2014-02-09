@@ -48,6 +48,7 @@ int main(){
 	int fd;
 	int result;
 	int i;
+	int ramSize;
 	fd = open("/dev/kyouko2", O_RDWR);
 	kyouko2.u_control_base = mmap(0,KYOUKO_CONTROL_SIZE,PROT_READ|PROT_WRITE,MAP_SHARED,fd,0);
 	result = U_READ_REG(Device_Ram);
