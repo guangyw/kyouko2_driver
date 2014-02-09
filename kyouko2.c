@@ -23,6 +23,10 @@
 #include <linux/fs.h>
 #include <linux/cdev.h>
 #include <linux/pci.h>
+#include <linux/delay.h>
+#include <linux/types.h>
+#include <linux/sched.h>
+#include <linux/mm.h>
 
 #define	PCI_VENDOR_ID 0x1234			/*  */
 #define	PCI_DEVICE_ID 0x1113			/*  */
@@ -46,7 +50,7 @@ static struct kyouko{
 	unsigned long p_fb_base;
 	unsigned int *k_control_base;
 	unsigned int *k_fb_base;
-	pci_dev *pci_dev;
+	struct pci_dev *pci_dev;
 }kyouko2;
 
 unsigned int K_READ_REG(unsigned int reg){
