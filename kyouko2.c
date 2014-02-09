@@ -60,7 +60,7 @@ void K_WRITE_REG(unsigned int reg, unsigned int value){
 	*(kyouko2.k_control_base + (reg>>2)) = value;
 }
 
-static int kyouko2_open(struct inode *inode, struct file *filp){
+int kyouko2_open(struct inode *inode, struct file *filp){
 	unsigned int ramSize;
 	printk(KERN_ALERT "opened device");
 	kyouko2.k_control_base = ioremap_nocache(kyouko2.p_control_base, CONTROL_SIZE);
@@ -71,16 +71,16 @@ static int kyouko2_open(struct inode *inode, struct file *filp){
 	return 0;
 }
 
-static int kyouko2_mmap(stuct file *filp, struct vm_area_struct *vma){
+int kyouko2_mmap(stuct file *filp, struct vm_area_struct *vma){
 	io_remap_pfn_range(vma, vma->start, kyouko2.p_control_base>>PAGE_SHIFT, vma->vm_end - vma->vm_start, vma->vm_page_prot);
 	return 0;
 }
 
-static int kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
+int kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
 	return 0;
 }
 
-static int kyouko2_release(void){
+int kyouko2_release(void){
 	//write 1 to reboot register
 	return 0;
 }
