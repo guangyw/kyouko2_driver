@@ -75,19 +75,19 @@ int kyouko2_open(struct inode *inode, struct file *filp){
 	unsigned int ramSize;
 	printk(KERN_ALERT "opened device");
 	kyouko2.k_control_base = ioremap_nocache(kyouko2.p_control_base, CONTROL_SIZE);
-	printk(KERN_ALERT "k_control_base is : %x",kyouko2.k_control_base);
+	printk(KERN_ALERT "k_control_base is : %x\n",kyouko2.k_control_base);
 	ramSize = K_READ_REG(Device_RAM);
 	printk(KERN_ALERT "ramSize is %d MB",ramSize);
 	ramSize *= (1024*1024);
 	kyouko2.k_fb_base = ioremap_nocache(kyouko2.p_fb_base, ramSize);
-	printk(KERN_ALERT "k_fb_base is : %x",kyouko2.k_fb_base);
+	printk(KERN_ALERT "k_fb_base is : %x\n",kyouko2.k_fb_base);
 	return 0;
 }
 
 int kyouko2_mmap(struct file *filp, struct vm_area_struct *vma){
 	int vma_size;
 	vma_size = vma->vm_end - vma->vm_start;
-	printk(KERN_ALERT "vma page offset is : %xl", vma->vm_pgoff);
+	printk(KERN_ALERT "vma page offset is : %x\n", vma->vm_pgoff);
 	if (vma->vm_pgoff == 0x0)
 		io_remap_pfn_range(vma, vma->vm_start, kyouko2.p_control_base>>PAGE_SHIFT, vma_size, vma->vm_page_prot);
 	else if (vma->vm_pgoff == 0x80000)
@@ -103,6 +103,7 @@ long kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
 	switch(cmd){
 		case VMODE:
 			if(((int)(arg)) == GRAPHICS_ON){
+				printk(KERN_ALERT "Graphics on \n");
 				//set frame 0
 				K_WRITE_REG(0x8000 + FRM_COLUMNS, 1024);
 				K_WRITE_REG(0x8000 + FRM_ROWS, 768);
@@ -120,6 +121,8 @@ long kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
 				//set acceleration
 				K_WRITE_REG(CFG_ACCELERATION, 0x40000000);
 				sync();
+				//modeset
+				K_WRITE_REG(CFG_MODESET,1);
 				//write to clear buffer reg
 				K_WRITE_REG(CLEAR_COLOR4F, 0x3F000000);
 				K_WRITE_REG(CLEAR_COLOR4F + 4, 0x3F000000);
@@ -183,14 +186,14 @@ static int kyouko2_init(void){
 	kyouko2_cdev.owner = THIS_MODULE;
 	cdev_add(&kyouko2_cdev, MKDEV(DEV_MAJOR, DEV_MINOR), 1);
 	flag = pci_register_driver(&kyouko2_pci_drv);
-	printk(KERN_ALERT "Initialized Device");
+	printk(KERN_ALERT "Initialized Device\n");
 	return 0;
 }
 
 static void kyouko2_exit(void){
 	pci_unregister_driver(&kyouko2_pci_drv);
 	cdev_del(&kyouko2_cdev);
-	printk(KERN_ALERT "Device deleted");
+	printk(KERN_ALERT "Device deleted\n");
 }
 
 module_init(kyouko2_init);
