@@ -136,7 +136,7 @@ long kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
 				//write 1 to clear buffer reg
 				K_WRITE_REG(RASTER_CLEAR, 1);
 			}else{
-				printk("Turning off graphic mode");
+				printk(KERN_ALERT "Turning off graphic mode");
 				sync();
 				K_WRITE_REG(CFG_REBOOT, 1);
 			}
