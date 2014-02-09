@@ -71,7 +71,7 @@ int kyouko2_open(struct inode *inode, struct file *filp){
 	return 0;
 }
 
-int kyouko2_mmap(stuct file *filp, struct vm_area_struct *vma){
+int kyouko2_mmap(struct file *filp, struct vm_area_struct *vma){
 	io_remap_pfn_range(vma, vma->start, kyouko2.p_control_base>>PAGE_SHIFT, vma->vm_end - vma->vm_start, vma->vm_page_prot);
 	return 0;
 }
