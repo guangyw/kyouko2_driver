@@ -66,6 +66,7 @@ int main(){
 	ioctl(SYNC);
 	sleep(5);
 	ioctl(fd,VMODE,GRAPHICS_OFF);
+	U_WRITE_REG(CFG_REBOOT,1);
 	close(fd);
 	return 0;
 }
