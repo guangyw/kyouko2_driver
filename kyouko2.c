@@ -143,18 +143,21 @@ long kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
 					K_WRITE_REG(RASTER_CLEAR, 1);
 					break;
 				case GRAPHICS_OFF:
-					printk(KERN_ALERT "Turning off graphic mode");
+					printk(KERN_ALERT "Turning off graphic mode\n");
 					//sync();
 					K_WRITE_REG(CFG_REBOOT, 1);
 					break;
 				default:
-					printk(KERN_ALERT "Argument not found");
+					printk(KERN_ALERT "Argument not found\n");
 					break;
 			}
 			break;
 		case SYNC:
-			printk(KERN_ALERT "SYNCING");
+			printk(KERN_ALERT "SYNCING\n");
 			sync();
+			break;
+		default:
+			printk(KERN_ALERT "No ioctl cmd found\n");
 			break;
 	}
 

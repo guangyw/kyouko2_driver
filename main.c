@@ -62,14 +62,14 @@ int main(){
 
 	//draw red line
 	ioctl(fd,VMODE,GRAPHICS_ON);
-	ioctl(SYNC);
-	u_sync();
+	ioctl(fd,SYNC);
+	//u_sync();
 	for(i=200*1024; i<201*1024;i++){
 		U_WRITE_FB(i,0xFF0000);
 	}
 	U_WRITE_REG(RASTER_FLUSH,1);
-	ioctl(SYNC);
-	u_sync();
+	ioctl(fd,SYNC);
+	//u_sync();
 	sleep(5);
 	ioctl(fd,VMODE,GRAPHICS_OFF);
 	//U_WRITE_REG(CFG_REBOOT,1);
