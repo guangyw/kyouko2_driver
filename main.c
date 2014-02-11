@@ -62,7 +62,7 @@ int main(){
 	for(i=200*1024; i<201*1024;i++){
 		U_WRITE_FB(i,0xFF0000);
 	}
-	U_WRITE_REG(RASTER_FLUSH,0);
+	U_WRITE_REG(RASTER_FLUSH,1);
 	ioctl(SYNC);
 	sleep(5);
 	ioctl(fd,VMODE,GRAPHICS_OFF);
