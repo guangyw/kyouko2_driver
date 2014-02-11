@@ -153,6 +153,7 @@ long kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
 			}
 			break;
 		case SYNC:
+			printk(KERN_ALERT "SYNCING");
 			sync();
 			break;
 	}

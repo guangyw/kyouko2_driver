@@ -44,6 +44,10 @@ void U_WRITE_REG(unsigned int reg, unsigned int value){
 	*(kyouko2.u_control_base + (reg>>2)) = value;
 }
 
+void u_sync(void){
+	while(U_READ_REG(FIFO_DEPTH)>0);
+}
+
 int main(){
 	int fd;
 	int result;
@@ -59,12 +63,13 @@ int main(){
 	//draw red line
 	ioctl(fd,VMODE,GRAPHICS_ON);
 	ioctl(SYNC);
-	printf("test");
+	u_sync();
 	for(i=200*1024; i<201*1024;i++){
 		U_WRITE_FB(i,0xFF0000);
 	}
 	U_WRITE_REG(RASTER_FLUSH,1);
 	ioctl(SYNC);
+	u_sync();
 	sleep(5);
 	ioctl(fd,VMODE,GRAPHICS_OFF);
 	//U_WRITE_REG(CFG_REBOOT,1);
