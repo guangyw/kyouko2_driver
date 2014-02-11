@@ -27,6 +27,10 @@
 #include <linux/types.h>
 #include <linux/sched.h>
 #include <linux/mm.h>
+#include <linux/mman.h>
+#include <asm/mman.h>
+#include <linux/io.h>
+#include <linux/spinlock.h>
 
 #include "kyouko2_ioctl.h"
 #include "kyouko2_reg.h"
@@ -57,6 +61,7 @@ static struct kyouko{
 
 unsigned int K_READ_REG(unsigned int reg){
 	unsigned int value;
+	rmb();
 	value = *(kyouko2.k_control_base + (reg>>2));
 	return value;
 }
