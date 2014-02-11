@@ -51,7 +51,7 @@ void u_sync(void){
 void draw_fifo(void){
 	float color[3][4] = {
 		0.3, 0.4, 0.5, 1.0,
-		0.8,0.1,0.4,1.0
+		0.8,0.1,0.4,1.0,
 		0.2,0.9,0.4,1.0};
 
 	float position[3][4] = {
@@ -64,8 +64,8 @@ void draw_fifo(void){
 	//load vertex position
 	for(i=0;i<3;++i){
 		for(j=0;j<4;++j){
-			U_WRITE_REG(VTX_COORD4F+4*j, *(unsigned int)&position[i][j]);
-			U_WRITE_REG(VTX_COLOR4F+4*j, *(unsigned int)&color[i][j]);
+			U_WRITE_REG(VTX_COORD4F+4*j, *(unsigned int*)&position[i][j]);
+			U_WRITE_REG(VTX_COLOR4F+4*j, *(unsigned int*)&color[i][j]);
 		}
 		U_WRITE_REG(RASTER_EMIT,0);
 	}
