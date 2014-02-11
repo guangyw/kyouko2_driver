@@ -59,6 +59,7 @@ int main(){
 	//draw red line
 	ioctl(fd,VMODE,GRAPHICS_ON);
 	ioctl(SYNC);
+	printf("test");
 	for(i=200*1024; i<201*1024;i++){
 		U_WRITE_FB(i,0xFF0000);
 	}
