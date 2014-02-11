@@ -48,6 +48,48 @@ void u_sync(void){
 	while(U_READ_REG(FIFO_DEPTH)>0);
 }
 
+void draw_fifo(void){
+	float color[3][4] = {
+		0.3, 0.4, 0.5, 1.0,
+		0.8,0.1,0.4,1.0
+		0.2,0.9,0.4,1.0};
+
+	float position[3][4] = {
+		-0.3,0.1,0.0,1.0,
+		0.2,0.4,0.0,1.0,
+		0.8,-0.5,0.0,1.0};
+	int i,j;
+	//select triangle
+	U_WRITE_REG(RASTER_PRIMITIVE, 1);
+	//load vertex position
+	for(i=0;i<3;++i){
+		for(j=0;j<4;++j){
+			U_WRITE_REG(VTX_COORD4F+4*j, *(unsigned int)&position[i][j]);
+			U_WRITE_REG(VTX_COLOR4F+4*j, *(unsigned int)&color[i][j]);
+		}
+		U_WRITE_REG(RASTER_EMIT,0);
+	}
+/*
+	U_WRITE_REG(VTX_COORD4F, *(unsigned int)&position[0]);
+	U_WRITE_REG(VTX_COORD4F+4, *(unsigned int)&position[1]);
+	U_WRITE_REG(VTX_COORD4F+8,*(unsigned int)&position[2]);
+	U_WRITE_REG(VTX_COORD4F+12,1,*(unsigned int)&position[3]);
+	//load vertex color
+	U_WRITE_REG(VTX_COLOR4F, *(unsigned int)&color[0]);
+	U_WRITE_REG(VTX_COLOR4F, *(unsigned int)&color[1]);
+	U_WRITE_REG(VTX_COLOR4F, *(unsigned int)&color[2]);
+	U_WRITE_REG(VTX_COLOR4F, *(unsigned int)&color[3]);
+	//emit
+	U_WRITE_REG(RASTER_EMIT, 0);
+*/
+
+	//reset primitive
+	U_WRITE_REG(RASTER_PRIMITIVE, 0);
+
+
+
+}
+
 int main(){
 	int fd;
 	int result;
@@ -69,6 +111,7 @@ int main(){
 	}
 	U_WRITE_REG(RASTER_FLUSH,1);
 	ioctl(fd,SYNC);
+	draw_fifo();
 	//u_sync();
 	sleep(5);
 	ioctl(fd,VMODE,GRAPHICS_OFF);
