@@ -113,7 +113,7 @@ int main(){
 	ioctl(fd,SYNC);
 	draw_fifo();
 	U_WRITE_REG(RASTER_FLUSH,1);
-	ioctl(fd,SYNC):
+	ioctl(fd,SYNC);
 	//u_sync();
 	sleep(5);
 	ioctl(fd,VMODE,GRAPHICS_OFF);
