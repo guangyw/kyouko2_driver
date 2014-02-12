@@ -45,6 +45,7 @@
 #define NUM_BUFFER 8
 #define BUFFER_SIZE (124*1024)
 
+DECLARE_WAIT_QUEUE_HEAD(dma_snooze);
 
 MODULE_LICENSE("Proprietary");
 MODULE_AUTHOR("Guangyan Wang");
@@ -126,9 +127,43 @@ void sync(void){
 	while(K_READ_REG(FIFO_DEPTH)>0);
 }
 
+irqreturn_t dma_intr(int irq, void *dev_id, struct pt_regs *regs){
+	unsigned int flags;
+	flags = K_READ_REG(STATUS);
+	K_WRITE_REG(STATUS,0xF);
+	if(flags & 0x02 == 0)
+		return (IRQ_NONE)
+	if(buffer_status.fill == buffer_status.drain){
+		wake_up_interruptible(&dma_snooze);
+	}
+	buffer_status.drain = (buffer_status.drain + 1) % NUM_BUFFER;
+	K_WRITE_REG(BUFFERA_ADDR, dma_buffers[buffer_status.drain].dma_handle);
+	K_WRITE_REG(BUFFERA_CONFIG, dma_buffers[buffer_status.drain].count);
+	return (IRQ_HANDLED);
+}
+
+void initiate_transfer(void){
+	//local irq need to be replaced by spinlock
+	unsigned int flag;
+	local_irq_save(flag);
+	if(fill == drain){
+		local_irq_restore(flag);
+		fill = (fill+1)%NUM_BUFFER;
+		K_WRITE_REG(BUFFERA_ADDR, dma_buffers[buffer_status.fill].dma_handle);
+		K_WRITE_REG(BUFFERA_CONFIG, dma_buffers[buffer_status.fill].count);
+		copy_to_user((unsigned long*)arg, &dma_buffers[buffer_status.drain].u_base_addr, sizeof(unsigned long));
+		return;
+	}
+	buffer_status.fill = (buffer_status.fill + 1) % NUM_BUFFER;
+	wait_event_interruptible(dma_snooze, fill != drain);
+	local_irq_restore(flag);
+	return;
+}
+
 long kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
-	int i;
-	int result;
+	unsigned int i;
+	unsigned int result;
+	unsigned long count;
 	switch(cmd){
 		case VMODE:
 			switch(arg){
@@ -152,7 +187,6 @@ long kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
 					K_WRITE_REG(CFG_ACCELERATION, 0x40000000);
 					sync();
 				//modeset
-				//commented off for debugging
 					K_WRITE_REG(CFG_MODESET,1);
 				//write to clear buffer reg
 					K_WRITE_REG(CLEAR_COLOR4F, 0x3F000000);
@@ -181,6 +215,13 @@ long kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
 			sync();
 			break;
 		case START_DMA:
+			//what is count in user space?
+			copy_from_user(&count,(unsigned long*)arg,sizeof(unsigned long));
+			if(count != 0){
+				dma_buffers[buffer_status.fill] = count;
+				initiate_transfer();
+				//copy_to_user((unsigned long*)arg, &dma_buffers[buffer_status.drain].u_base_addr, sizeof(unsigned long));
+			}
 			break;
 
 		case BIND_DMA:
@@ -194,9 +235,9 @@ long kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
 			}
 			//enable message interrupt
 			pci_enable_msi(kyouko2.pci_dev);
-			/*result = request_irq(kyouko2.pci_dev->irq,(irq_handler_t)dma_intr,IRQF_SHARED|IRQF_DISABLED,"dma_intr",&kyouko2);
+			result = request_irq(kyouko2.pci_dev->irq,(irq_handler_t)dma_intr,IRQF_SHARED|IRQF_DISABLED,"dma_intr",&kyouko2);
 			K_WRITE_REG(CFG_INTERRUPT,0x02);
-			*/
+
 			buffer_status.fill = 0;
 			buffer_status.drain = 0;
 			copy_to_user((unsigned long*)arg, &dma_buffers[buffer_status.fill].u_base_addr, sizeof(unsigned long));
