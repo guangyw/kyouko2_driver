@@ -154,7 +154,7 @@ void initiate_transfer(void){
 		return;
 	}
 	buffer_status.fill = (buffer_status.fill + 1) % NUM_BUFFER;
-	wait_event_interruptible(dma_snooze, fill != drain);
+	wait_event_interruptible(dma_snooze, buffer_status.fill != buffer_status.drain);
 	local_irq_restore(flag);
 	return;
 }
