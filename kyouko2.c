@@ -188,7 +188,7 @@ long kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
 			for(i=0; i < NUM_BUFFER; ++i){
 				dma_buffers[i].k_base_addr = pci_alloc_consistent(kyouko2.pci_dev,BUFFER_SIZE,&dma_buffers[i].dma_handle);
 				buffer_status.cur = i;
-				dma_buffers[i].u_base_addr = do_mmap(filp,0,BUFFER_SIZE,PROT_READ|PROT_WRITE,MAP_SHARED,0);
+				dma_buffers[i].u_base_addr = do_mmap(filp,0,BUFFER_SIZE,PROT_READ|PROT_WRITE,MAP_SHARED,0x10000);
 				dma_buffers[i].count = 0;
 			}
 			//enable message interrupt
