@@ -117,7 +117,7 @@ int main(){
 	ioctl(fd,SYNC);
 	//u_sync();
 	sleep(5);
-	ioctl(fd,BIND_DMA,arg);
+	ioctl(fd,BIND_DMA,&arg);
 	//ioctl(fd,START_DMA,arg);
 	printf("buffer address %x", arg);
 	ioctl(fd,VMODE,GRAPHICS_OFF);
