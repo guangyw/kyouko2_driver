@@ -132,7 +132,7 @@ irqreturn_t dma_intr(int irq, void *dev_id, struct pt_regs *regs){
 	flags = K_READ_REG(STATUS);
 	K_WRITE_REG(STATUS,0xF);
 	if(flags & 0x02 == 0)
-		return (IRQ_NONE)
+		return (IRQ_NONE);
 	if(buffer_status.fill == buffer_status.drain){
 		wake_up_interruptible(&dma_snooze);
 	}
@@ -146,12 +146,11 @@ void initiate_transfer(void){
 	//local irq need to be replaced by spinlock
 	unsigned int flag;
 	local_irq_save(flag);
-	if(fill == drain){
+	if(buffer_status.fill == buffer_status.drain){
 		local_irq_restore(flag);
-		fill = (fill+1)%NUM_BUFFER;
+		buffer_status.fill = (buffer_status.fill+1)%NUM_BUFFER;
 		K_WRITE_REG(BUFFERA_ADDR, dma_buffers[buffer_status.fill].dma_handle);
 		K_WRITE_REG(BUFFERA_CONFIG, dma_buffers[buffer_status.fill].count);
-		copy_to_user((unsigned long*)arg, &dma_buffers[buffer_status.drain].u_base_addr, sizeof(unsigned long));
 		return;
 	}
 	buffer_status.fill = (buffer_status.fill + 1) % NUM_BUFFER;
@@ -220,7 +219,7 @@ long kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
 			if(count != 0){
 				dma_buffers[buffer_status.fill] = count;
 				initiate_transfer();
-				//copy_to_user((unsigned long*)arg, &dma_buffers[buffer_status.drain].u_base_addr, sizeof(unsigned long));
+				copy_to_user((unsigned long*)arg, &dma_buffers[buffer_status.drain].u_base_addr, sizeof(unsigned long));
 			}
 			break;
 
