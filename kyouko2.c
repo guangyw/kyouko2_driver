@@ -110,13 +110,13 @@ int kyouko2_mmap(struct file *filp, struct vm_area_struct *vma){
 	vma_size = vma->vm_end - vma->vm_start;
 	printk(KERN_ALERT "vma page offset is : %x\n", vma->vm_pgoff);
 	if (vma->vm_pgoff == 0x0){
-		printk(KERN_ALERT "mmapping control base address");
+		printk(KERN_ALERT "mmapping control base address\n");
 		io_remap_pfn_range(vma, vma->vm_start, kyouko2.p_control_base>>PAGE_SHIFT, vma_size, vma->vm_page_prot);
 	}else if (vma->vm_pgoff == 0x80000){
-		printk(KERN_ALERT "mmapping frame buffer base address");
+		printk(KERN_ALERT "mmapping frame buffer base address\n");
 		io_remap_pfn_range(vma, vma->vm_start, kyouko2.p_fb_base>>PAGE_SHIFT, vma_size, vma->vm_page_prot);
 	}else{
-		printk(KERN_ALERT "mmapping buffer");
+		printk(KERN_ALERT "mmapping buffer\n");
 		io_remap_pfn_range(vma, vma->vm_start, dma_buffers[buffer_status.cur].dma_handle, vma_size, vma->vm_page_prot);
 	}
 	return 0;
@@ -184,6 +184,7 @@ long kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
 			break;
 
 		case BIND_DMA:
+			printk(KERN_ALERT "IN BINDING DMA\n");
 			for(i=0; i < NUM_BUFFER; ++i){
 				dma_buffers[i].k_base_addr = pci_alloc_consistent(kyouko2.pci_dev,BUFFER_SIZE,&dma_buffers[i].dma_handle);
 				buffer_status.cur = i;
