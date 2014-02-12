@@ -119,7 +119,7 @@ int main(){
 	sleep(5);
 	ioctl(fd,BIND_DMA,&arg);
 
-	arg = 12 //test
+	arg = 12; //test
 	ioctl(fd,START_DMA,arg);
 	printf("buffer address %lx\n", arg);
 	ioctl(fd,VMODE,GRAPHICS_OFF);
