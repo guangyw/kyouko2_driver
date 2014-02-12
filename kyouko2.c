@@ -217,7 +217,7 @@ long kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
 			//what is count in user space?
 			copy_from_user(&count,(unsigned long*)arg,sizeof(unsigned long));
 			if(count != 0){
-				dma_buffers[buffer_status.fill] = count;
+				dma_buffers[buffer_status.fill].count = count;
 				initiate_transfer();
 				copy_to_user((unsigned long*)arg, &dma_buffers[buffer_status.drain].u_base_addr, sizeof(unsigned long));
 			}
