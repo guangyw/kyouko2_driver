@@ -22,10 +22,10 @@
 #define	CFG_ACCELERATION 0x1010
 
 //stream buffer
-#define	SB_A_ADDRESS 0x2000
-#define	SB_A_CONFIG 0x2008			/*  */
-#define	SB_B_ADDRESS 0x2004			/*  */
-#define	SB_B_CONFIG 0x200C			/*  */
+#define	BUFFERA_ADDR 0x2000
+#define	BUFFERA_CONFIG 0x2008			/*  */
+#define	BUFFERB_ADDRESS 0x2004			/*  */
+#define	BUFFERB_CONFIG 0x200C			/*  */
 
 //Rasterization
 #define RASTER_PRIMITIVE 0x3000

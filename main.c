@@ -95,6 +95,7 @@ int main(){
 	int result;
 	int i;
 	int ramSize;
+	unsigned long arg;
 	fd = open("/dev/kyouko2", O_RDWR);
 	kyouko2.u_control_base = mmap(0,KYOUKO_CONTROL_SIZE,PROT_READ|PROT_WRITE,MAP_SHARED,fd,0);
 	result = U_READ_REG(Device_Ram);
@@ -116,6 +117,8 @@ int main(){
 	ioctl(fd,SYNC);
 	//u_sync();
 	sleep(5);
+	ioctl(fd,START_DMA,arg);
+	printf("buffer address %x", arg);
 	ioctl(fd,VMODE,GRAPHICS_OFF);
 	//U_WRITE_REG(CFG_REBOOT,1);
 	close(fd);

@@ -41,6 +41,9 @@
 #define	DEV_MINOR 127			/*  */
 #define	CONTROL_SIZE 65536			/*  */
 #define	Device_RAM 0x0020			/*  */
+//dma buffer
+#define NUM_BUFFER 8
+#define BUFFER_SIZE (124*1024)
 
 
 MODULE_LICENSE("Proprietary");
@@ -58,6 +61,19 @@ static struct kyouko{
 	unsigned int *k_fb_base;
 	struct pci_dev *pci_dev;
 }kyouko2;
+
+struct dma_buffer{
+	unsigned int *k_base_addr;
+	unsigned long u_base_addr;
+	dma_addr_t dma_handle;
+	unsigned int count;
+}dma_buffers[NUM_BUFFER];
+
+struct buffer_status{
+	unsigned int current;
+	unsigned int fill;
+	unsigned int drain;
+}buffer_status;
 
 unsigned int K_READ_REG(unsigned int reg){
 	unsigned int value;
@@ -97,6 +113,10 @@ int kyouko2_mmap(struct file *filp, struct vm_area_struct *vma){
 		io_remap_pfn_range(vma, vma->vm_start, kyouko2.p_control_base>>PAGE_SHIFT, vma_size, vma->vm_page_prot);
 	else if (vma->vm_pgoff == 0x80000)
 		io_remap_pfn_range(vma, vma->vm_start, kyouko2.p_fb_base>>PAGE_SHIFT, vma_size, vma->vm_page_prot);
+	else{
+		printk(KERN_ALERT, "mmapping buffer");
+		io_remap_pfn_range(vma, vma->vm_start, dma_buffers[buffer_status.current].dma_handle, vma_size, vma->vm_page_prot);
+	}
 	return 0;
 }
 
@@ -105,6 +125,8 @@ void sync(void){
 }
 
 long kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
+	int i;
+	int result;
 	switch(cmd){
 		case VMODE:
 			switch(arg){
@@ -155,6 +177,24 @@ long kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
 		case SYNC:
 			printk(KERN_ALERT "SYNCING\n");
 			sync();
+			break;
+		case START_DMA:
+			break;
+
+		case BIND_DMA:
+			for(i=0; i < NUM_BUFFER; ++i){
+				dma_buffers[i].k_base_addr = pci_alloc_consistent(kyouko2.pci_dev,BUFFER_SIZE,&dma_buffers[i].dma_handle);
+				buffer_status.current = i;
+				dma_buffers[i].u_base_addr = do_mmap(fd,0,BUFFER_SIZE,PROT_READ|PROT_WRITE,MAP_SHARED,0);
+				dma_buffers[i].count = 0;
+			}
+			//enable message interrupt
+			pci_enable_msi(kyouko2.pci_dev);
+			result = request_irq(kyouko2.pci_dev->irq,(irq_handler_t)dma_intr,IRQF_SHARED|IRQF_DISABLED,"dma_intr",&kyouko2);
+			K_WRITE_REG(CFG_INTERRUPT,0x02);
+			buffer_status.fill = 0;
+			buffer_status.drain = 0;
+			copy_to_user((unsigned long*)arg, dma_buffers[buffer_status.fill].u_base_addr, sizeof(unsigned long));
 			break;
 		default:
 			printk(KERN_ALERT "No ioctl cmd found\n");
