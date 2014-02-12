@@ -116,7 +116,7 @@ int kyouko2_mmap(struct file *filp, struct vm_area_struct *vma){
 		printk(KERN_ALERT "mmapping frame buffer base address");
 		io_remap_pfn_range(vma, vma->vm_start, kyouko2.p_fb_base>>PAGE_SHIFT, vma_size, vma->vm_page_prot);
 	}else{
-		printk(KERN_ALERT, "mmapping buffer");
+		printk(KERN_ALERT "mmapping buffer");
 		io_remap_pfn_range(vma, vma->vm_start, dma_buffers[buffer_status.cur].dma_handle, vma_size, vma->vm_page_prot);
 	}
 	return 0;
