@@ -149,8 +149,8 @@ void initiate_transfer(void){
 	if(buffer_status.fill == buffer_status.drain){
 		local_irq_restore(flag);
 		buffer_status.fill = (buffer_status.fill+1)%NUM_BUFFER;
-		K_WRITE_REG(BUFFERA_ADDR, dma_buffers[buffer_status.fill].dma_handle);
-		K_WRITE_REG(BUFFERA_CONFIG, dma_buffers[buffer_status.fill].count);
+		K_WRITE_REG(BUFFERA_ADDR, dma_buffers[buffer_status.drain].dma_handle);
+		K_WRITE_REG(BUFFERA_CONFIG, dma_buffers[buffer_status.drain].count);
 		return;
 	}
 	buffer_status.fill = (buffer_status.fill + 1) % NUM_BUFFER;
