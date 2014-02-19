@@ -101,9 +101,10 @@ int main(){
 	//u_sync();
 	sleep(3);
 	ioctl(fd,BIND_DMA,&arg);
-
+	ioctl(fd,SYNC);
 	arg = 12; //test
 	ioctl(fd,START_DMA,&arg);
+	ioctl(fd,SYNC);
 	printf("buffer address %lx\n", arg);
 	ioctl(fd,VMODE,GRAPHICS_OFF);
 	//U_WRITE_REG(CFG_REBOOT,1);
