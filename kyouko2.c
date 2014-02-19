@@ -142,7 +142,7 @@ irqreturn_t dma_intr(int irq, void *dev_id, struct pt_regs *regs){
 	buffer_status.drain = (buffer_status.drain + 1) % NUM_BUFFER;
 	K_WRITE_REG(BUFFERA_ADDR, dma_buffers[buffer_status.drain].dma_handle);
 	K_WRITE_REG(BUFFERA_CONFIG, dma_buffers[buffer_status.drain].count);
-	spin_unlock_irqsave(&lock, flags);
+	spin_unlock_irqrestore(&lock, flags);
 	return (IRQ_HANDLED);
 }
 
@@ -154,7 +154,7 @@ void initiate_transfer(void){
 	if(buffer_status.fill == buffer_status.drain){
 		//local_irq_restore(flag);
 		buffer_status.fill = (buffer_status.fill+1)%NUM_BUFFER;
-		spin_unlock_irqsave(&lock,flags);
+		spin_unlock_irqrestore(&lock,flags);
 		K_WRITE_REG(BUFFERA_ADDR, dma_buffers[buffer_status.drain].dma_handle);
 		K_WRITE_REG(BUFFERA_CONFIG, dma_buffers[buffer_status.drain].count);
 		return;
@@ -163,7 +163,7 @@ void initiate_transfer(void){
 	if(buffer_status.fill == buffer_status.drain){
 		fill_flag = true;
 	}
-	spin_unlock_irqsave(&lock,flags);
+	spin_unlock_irqrestore(&lock,flags);
 	wait_event_interruptible(dma_snooze, fill_flag == false);
 	//wait_event_interruptible(dma_snooze, buffer_status.fill != buffer_status.drain);
 	//local_irq_restore(flag);
