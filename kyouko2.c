@@ -46,6 +46,8 @@
 #define BUFFER_SIZE (124*1024)
 
 DECLARE_WAIT_QUEUE_HEAD(dma_snooze);
+static spinlock_t lock;
+static unsigned long flags;
 
 MODULE_LICENSE("Proprietary");
 MODULE_AUTHOR("Guangyan Wang");
@@ -133,29 +135,38 @@ irqreturn_t dma_intr(int irq, void *dev_id, struct pt_regs *regs){
 	K_WRITE_REG(STATUS,0xF);
 	if(flags & 0x02 == 0)
 		return (IRQ_NONE);
+	spin_lock_irqsave(&lock, flags);
 	if(buffer_status.fill == buffer_status.drain){
 		wake_up_interruptible(&dma_snooze);
 	}
 	buffer_status.drain = (buffer_status.drain + 1) % NUM_BUFFER;
 	K_WRITE_REG(BUFFERA_ADDR, dma_buffers[buffer_status.drain].dma_handle);
 	K_WRITE_REG(BUFFERA_CONFIG, dma_buffers[buffer_status.drain].count);
+	spin_unlock_irqsave(&lock, flags);
 	return (IRQ_HANDLED);
 }
 
 void initiate_transfer(void){
 	//local irq need to be replaced by spinlock
-	unsigned int flag;
-	local_irq_save(flag);
+	bool fill_flag = false;
+	spin_lock_irqsave(&lock,flags);
+	//local_irq_save(flag);
 	if(buffer_status.fill == buffer_status.drain){
-		local_irq_restore(flag);
+		//local_irq_restore(flag);
 		buffer_status.fill = (buffer_status.fill+1)%NUM_BUFFER;
+		spin_unlock_irqsave(&lock,flags);
 		K_WRITE_REG(BUFFERA_ADDR, dma_buffers[buffer_status.drain].dma_handle);
 		K_WRITE_REG(BUFFERA_CONFIG, dma_buffers[buffer_status.drain].count);
 		return;
 	}
 	buffer_status.fill = (buffer_status.fill + 1) % NUM_BUFFER;
-	wait_event_interruptible(dma_snooze, buffer_status.fill != buffer_status.drain);
-	local_irq_restore(flag);
+	if(buffer_status.fill == buffer_status.drain){
+		fill_flag = true;
+	}
+	spin_unlock_irqsave(&lock,flags);
+	wait_event_interruptible(dma_snooze, fill_flag == false);
+	//wait_event_interruptible(dma_snooze, buffer_status.fill != buffer_status.drain);
+	//local_irq_restore(flag);
 	return;
 }
 

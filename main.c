@@ -69,25 +69,8 @@ void draw_fifo(void){
 		}
 		U_WRITE_REG(RASTER_EMIT,0);
 	}
-/*
-	U_WRITE_REG(VTX_COORD4F, *(unsigned int)&position[0]);
-	U_WRITE_REG(VTX_COORD4F+4, *(unsigned int)&position[1]);
-	U_WRITE_REG(VTX_COORD4F+8,*(unsigned int)&position[2]);
-	U_WRITE_REG(VTX_COORD4F+12,1,*(unsigned int)&position[3]);
-	//load vertex color
-	U_WRITE_REG(VTX_COLOR4F, *(unsigned int)&color[0]);
-	U_WRITE_REG(VTX_COLOR4F, *(unsigned int)&color[1]);
-	U_WRITE_REG(VTX_COLOR4F, *(unsigned int)&color[2]);
-	U_WRITE_REG(VTX_COLOR4F, *(unsigned int)&color[3]);
-	//emit
-	U_WRITE_REG(RASTER_EMIT, 0);
-*/
-
 	//reset primitive
 	U_WRITE_REG(RASTER_PRIMITIVE, 0);
-
-
-
 }
 
 int main(){
