@@ -226,7 +226,7 @@ long kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
 			break;
 		case START_DMA:
 			//what is count in user space?
-			printk(KERN_ALERT "arg possibly is %d",*(unsigned long*)arg);
+			//printk(KERN_ALERT "arg possibly is %d",*(unsigned long*)arg); //can not access this region
 			copy_from_user(&count,(unsigned long*)arg,sizeof(unsigned long));
 			printk(KERN_ALERT "count is : %d\n", count);
 			if(count != 0){
