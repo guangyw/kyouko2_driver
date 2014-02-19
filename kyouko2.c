@@ -227,6 +227,7 @@ long kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
 		case START_DMA:
 			//what is count in user space?
 			copy_from_user(&count,(unsigned long*)arg,sizeof(unsigned long));
+			printk(KERN_ALERT "count is : %l", count);
 			if(count != 0){
 				dma_buffers[buffer_status.fill].count = count;
 				initiate_transfer();
