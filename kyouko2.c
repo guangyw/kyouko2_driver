@@ -226,9 +226,11 @@ long kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
 			break;
 		case START_DMA:
 			//what is count in user space?
+			printk(KERN_ALERT "arg possibly is %d",*(unsigned long*)arg);
 			copy_from_user(&count,(unsigned long*)arg,sizeof(unsigned long));
 			printk(KERN_ALERT "count is : %d\n", count);
 			if(count != 0){
+				pirntk(KERN_ALERT "initiating transmission");
 				dma_buffers[buffer_status.fill].count = count;
 				initiate_transfer();
 				copy_to_user((unsigned long*)arg, &dma_buffers[buffer_status.drain].u_base_addr, sizeof(unsigned long));
