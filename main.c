@@ -29,8 +29,32 @@ struct u_kyouko2_device {
 	unsigned int *u_fb_base;
 }kyouko2;
 
+struct kyouko2_dma_hdr {
+	uint32_t stride:5;
+	uint32_t has_v4:1;
+	uint32_t has_c3:1;
+	uint32_t has_c4:1;
+	uint32_t unused:4;
+	uint32_t prim_type:2;
+	uint32_t count:10;
+	uint32_t opcode:8;
+}
+
+struct kyouko2_dma_hdr dma_hdr{
+	.stride = 5;
+	.has_v4 = 1;
+	.has_c3 = 1;
+	.has_c4 = 1;
+	.unused = 0;
+	.prim_type = 0;
+	.count = 3;
+	.opcode = 0x14;
+}
+
 #define	KYOUKO_CONTROL_SIZE (65536)			/*  */
 #define	Device_Ram (0x0020)			/*  */
+unsigned long arg;
+unsigned int countByte;
 
 unsigned int U_READ_REG(unsigned int reg){
 	return (*(kyouko2.u_control_base + (reg>>2)));
@@ -73,12 +97,28 @@ void draw_fifo(void){
 	U_WRITE_REG(RASTER_PRIMITIVE, 0);
 }
 
+void triangle(void){
+	unsigned int i, j;
+	countByte = 0;
+	unsigned int* buf = (unsigned int*)(arg);
+	buf[countByte++] = dma_hdr;
+	for(i=0; i<3; ++i){
+		for(j=0; j<3; ++j){
+			buf[countByte++] = *(unsigned int*)&color[i][j];
+		}
+	}
+	for(i=0; i<3; ++i){
+		for(j=0; j<3; ++j){
+			buf[countByte++] = *(unsigned int*)&position[i][j];
+		}
+	}
+}
+
 int main(){
 	int fd;
 	int result;
 	int i;
 	int ramSize;
-	unsigned long arg;
 	fd = open("/dev/kyouko2", O_RDWR);
 	kyouko2.u_control_base = mmap(0,KYOUKO_CONTROL_SIZE,PROT_READ|PROT_WRITE,MAP_SHARED,fd,0);
 	result = U_READ_REG(Device_Ram);
@@ -95,14 +135,14 @@ int main(){
 	}
 	U_WRITE_REG(RASTER_FLUSH,1);
 	ioctl(fd,SYNC);
-	draw_fifo();
+	//draw_fifo();
 	U_WRITE_REG(RASTER_FLUSH,1);
 	ioctl(fd,SYNC);
 	//u_sync();
 	sleep(3);
 	ioctl(fd,BIND_DMA,&arg);
 	ioctl(fd,SYNC);
-	arg = 12; //test
+	arg = countByte; //test
 	ioctl(fd,START_DMA,&arg);
 	ioctl(fd,SYNC);
 	printf("buffer address %lx\n", arg);

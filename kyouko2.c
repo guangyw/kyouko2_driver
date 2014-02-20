@@ -233,7 +233,8 @@ long kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
 				printk(KERN_ALERT "initiating transmission");
 				dma_buffers[buffer_status.fill].count = count;
 				initiate_transfer();
-				copy_to_user((unsigned long*)arg, &dma_buffers[buffer_status.drain].u_base_addr, sizeof(unsigned long));
+				//copy_to_user((unsigned long*)arg, &dma_buffers[buffer_status.drain].u_base_addr, sizeof(unsigned long));
+				copy_to_user((unsigned long*)arg, &dma_buffers[buffer_status.fill].u_base_addr, sizeof(unsigned long));
 			}
 			break;
 
