@@ -121,7 +121,6 @@ void triangle(void){
 			buf[countByte++] = *(unsigned int*)&position[i][j];
 		}
 	}
-	//printf("countByte in triangle %d\n",countByte);
 }
 
 int main(){
@@ -154,7 +153,7 @@ int main(){
 	ioctl(fd,SYNC);
 	triangle();
 	arg = countByte; //test
-	printf("number of byte user level is : %d\n", countByte);
+	//printf("number of byte user level is : %d\n", countByte);
 	ioctl(fd,START_DMA,&arg);
 	ioctl(fd,SYNC);
 	printf("buffer address %lx\n", arg);
