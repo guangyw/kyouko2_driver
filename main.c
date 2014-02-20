@@ -40,7 +40,7 @@ typedef struct{
 	unsigned int opcode:8;
 }kyouko2_dma_hdr;
 
-struct kyouko2_dma_hdr dma_hdr{
+kyouko2_dma_hdr dma_hdr = {
 	.stride = 5,
 	.has_v4 = 1,
 	.has_c3 = 1,
