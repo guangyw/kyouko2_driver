@@ -151,7 +151,7 @@ int main(){
 	sleep(3);
 	ioctl(fd,BIND_DMA,&arg);
 	ioctl(fd,SYNC);
-	triangle();
+	//triangle();
 	arg = countByte; //test
 	printf("number of byte user level is : %d\n", countByte);
 	ioctl(fd,START_DMA,&arg);
