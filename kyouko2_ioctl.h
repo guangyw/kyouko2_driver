@@ -20,7 +20,7 @@
 
 #define VMODE _IOW(0xCC, 0, unsigned long)
 #define BIND_DMA _IOW(0xCC, 1, unsigned long)
-#define START_DMA _IOW(0xCC, 2, unsigned long)
+#define START_DMA _IOWR(0xCC, 2, unsigned long)
 #define SYNC _IO(0xCC, 3)
 
 #define GRAPHICS_ON _IOW(0xCC, 4, unsigned long)
