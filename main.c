@@ -38,7 +38,7 @@ struct kyouko2_dma_hdr {
 	uint32_t prim_type:2;
 	uint32_t count:10;
 	uint32_t opcode:8;
-}
+};
 
 struct kyouko2_dma_hdr dma_hdr{
 	.stride = 5;
@@ -49,7 +49,7 @@ struct kyouko2_dma_hdr dma_hdr{
 	.prim_type = 0;
 	.count = 3;
 	.opcode = 0x14;
-}
+};
 
 #define	KYOUKO_CONTROL_SIZE (65536)			/*  */
 #define	Device_Ram (0x0020)			/*  */
