@@ -151,15 +151,11 @@ int main(){
 	sleep(3);
 	ioctl(fd,BIND_DMA,&arg);
 	ioctl(fd,SYNC);
-	triangle();
 	arg = countByte; //test
-	//printf("number of byte user level is : %d\n", countByte);
 	ioctl(fd,START_DMA,&arg);
 	ioctl(fd,SYNC);
 	printf("buffer address %lx\n", arg);
-	ioctl(fd,SYNC);
 	ioctl(fd,VMODE,GRAPHICS_OFF);
-	ioctl(fd,SYNC);
 	//U_WRITE_REG(CFG_REBOOT,1);
 	close(fd);
 	return 0;
