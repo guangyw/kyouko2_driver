@@ -46,7 +46,7 @@ kyouko2_dma_hdr dma_hdr = {
 	.has_c3 = 1,
 	.has_c4 = 1,
 	.unused = 0,
-	.prim_type = 0,
+	.prim_type = 1,
 	.count = 3,
 	.opcode = 0x14
 };
@@ -153,7 +153,7 @@ int main(){
 	ioctl(fd,SYNC);
 	printf("user buffer address %lx\n", arg);
 	//triangle();
-	arg = 8; //test
+	arg = countByte; //test
 	printf("number of byte user level is : %d\n", countByte);
 	ioctl(fd,START_DMA,&arg);
 	ioctl(fd,SYNC);
