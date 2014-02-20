@@ -110,7 +110,7 @@ void triangle(void){
 	unsigned int i, j;
 	countByte = 0;
 	unsigned int* buf = (unsigned int*)(arg);
-	buf[countByte++] = dma_hdr;
+	buf[countByte++] = (unsigned int)dma_hdr;
 	for(i=0; i<3; ++i){
 		for(j=0; j<3; ++j){
 			buf[countByte++] = *(unsigned int*)&color[i][j];
