@@ -29,18 +29,18 @@ struct u_kyouko2_device {
 	unsigned int *u_fb_base;
 }kyouko2;
 
-struct kyouko2_dma_hdr {
-	uint32_t stride:5;
-	uint32_t has_v4:1;
-	uint32_t has_c3:1;
-	uint32_t has_c4:1;
-	uint32_t unused:4;
-	uint32_t prim_type:2;
-	uint32_t count:10;
-	uint32_t opcode:8;
-};
+typedef struct{
+	unsigned int stride:5;
+	unsigned int has_v4:1;
+	unsigned int has_c3:1;
+	unsigned int has_c4:1;
+	unsigned int unused:4;
+	unsigned int prim_type:2;
+	unsigned int count:10;
+	unsigned int opcode:8;
+}kyouko2_dma_hdr ;
 
-struct kyouko2_dma_hdr dma_hdr{
+kyouko2_dma_hdr dma_hdr{
 	.stride = 5;
 	.has_v4 = 1;
 	.has_c3 = 1;
@@ -98,6 +98,15 @@ void draw_fifo(void){
 }
 
 void triangle(void){
+	float color[3][4] = {
+		0.3, 0.4, 0.5, 1.0,
+		0.8,0.1,0.4,1.0,
+		0.2,0.9,0.4,1.0};
+
+	float position[3][4] = {
+		-0.3,0.1,0.0,1.0,
+		0.2,0.4,0.0,1.0,
+		0.8,-0.5,0.0,1.0};
 	unsigned int i, j;
 	countByte = 0;
 	unsigned int* buf = (unsigned int*)(arg);
