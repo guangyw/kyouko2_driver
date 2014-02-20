@@ -42,9 +42,9 @@ typedef struct{
 
 kyouko2_dma_hdr dma_hdr = {
 	.stride = 5,
-	.has_v4 = 1,
+	.has_v4 = 0,
 	.has_c3 = 1,
-	.has_c4 = 1,
+	.has_c4 = 0,
 	.unused = 0,
 	.prim_type = 1,
 	.count = 3,
