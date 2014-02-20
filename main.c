@@ -121,7 +121,7 @@ void triangle(void){
 			buf[countByte++] = *(unsigned int*)&position[i][j];
 		}
 	}
-	printf("countByte in triangle %d\n",countByte);
+	//printf("countByte in triangle %d\n",countByte);
 }
 
 int main(){
@@ -158,7 +158,9 @@ int main(){
 	ioctl(fd,START_DMA,&arg);
 	ioctl(fd,SYNC);
 	printf("buffer address %lx\n", arg);
+	ioctl(fd,SYNC);
 	ioctl(fd,VMODE,GRAPHICS_OFF);
+	ioctl(fd,SYNC);
 	//U_WRITE_REG(CFG_REBOOT,1);
 	close(fd);
 	return 0;
