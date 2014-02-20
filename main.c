@@ -38,17 +38,17 @@ typedef struct{
 	unsigned int prim_type:2;
 	unsigned int count:10;
 	unsigned int opcode:8;
-}kyouko2_dma_hdr ;
+}kyouko2_dma_hdr;
 
 kyouko2_dma_hdr dma_hdr{
-	.stride = 5;
-	.has_v4 = 1;
-	.has_c3 = 1;
-	.has_c4 = 1;
-	.unused = 0;
-	.prim_type = 0;
-	.count = 3;
-	.opcode = 0x14;
+	.stride = 5,
+	.has_v4 = 1,
+	.has_c3 = 1,
+	.has_c4 = 1,
+	.unused = 0,
+	.prim_type = 0,
+	.count = 3,
+	.opcode = 0x14
 };
 
 #define	KYOUKO_CONTROL_SIZE (65536)			/*  */
