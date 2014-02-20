@@ -150,6 +150,7 @@ int main(){
 	//u_sync();
 	sleep(3);
 	ioctl(fd,BIND_DMA,&arg);
+	printf("user buffer address %xl", arg);
 	ioctl(fd,SYNC);
 	//triangle();
 	arg = countByte; //test
