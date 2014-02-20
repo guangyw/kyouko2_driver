@@ -121,6 +121,7 @@ void triangle(void){
 			buf[countByte++] = *(unsigned int*)&position[i][j];
 		}
 	}
+	printf("countByte in triangle %d\n",countByte);
 }
 
 int main(){
