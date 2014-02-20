@@ -152,7 +152,7 @@ int main(){
 	ioctl(fd,BIND_DMA,&arg);
 	ioctl(fd,SYNC);
 	printf("user buffer address %lx\n", arg);
-	triangle();
+	//triangle();
 	arg = countByte; //test
 	printf("number of byte user level is : %d\n", countByte);
 	ioctl(fd,START_DMA,&arg);
