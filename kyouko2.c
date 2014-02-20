@@ -271,7 +271,7 @@ int kyouko2_release(struct inode * inode, struct file *filp){
 	sync();
 	for(i=0; i<NUM_BUFFER; ++i){
 		pci_free_consistent(kyouko2.pci_dev, BUFFER_SIZE, dma_buffers[i].k_base_addr, dma_buffers[i].dma_handle);
-		do_munmap(dma_buffers[i].u_base_addr, BUFFER_SIZE);
+		//do_munmap(dma_buffers[i].u_base_addr, BUFFER_SIZE);
 	}
 	free_irq(kyouko2.pci_dev->irq, &kyouko2);
 	pci_disable_msi(kyouko2.pci_dev);
