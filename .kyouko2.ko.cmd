@@ -1,0 +1,1 @@
+cmd_/root/kyouko2_driver/kyouko2.ko := ld -r -m elf_x86_64 -T /usr/src/kernels/linux-3.2.54/scripts/module-common.lds --build-id  -o /root/kyouko2_driver/kyouko2.ko /root/kyouko2_driver/kyouko2.o /root/kyouko2_driver/kyouko2.mod.o
