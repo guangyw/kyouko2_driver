@@ -1,28 +1,20 @@
-/*
- * =====================================================================================
- *
- *       Filename:  main.c
- *
- *    Description:
- *
- *        Version:  1.0
- *        Created:  02/09/2014 14:14:15
- *       Revision:  none
- *       Compiler:  gcc
- *
- *         Author:  Guangyan Wang (), guangyw@gmail.com
- *   Organization:  Clemson University
- *
- * =====================================================================================
- */
-
 #include <stdio.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <math.h>
 #include <sys/mman.h>
-#include "kyouko2_ioctl.h"
+#include <linux/ioctl.h>
 #include "kyouko2_reg.h"
+#include <time.h>
+#include <stdlib.h>
+
+#define VMODE _IOW(0xcc,0,unsigned long)
+#define BIND_DMA _IOW(0xcc,1,unsigned long)
+#define START_DMA _IOWR(0xcc,2,unsigned long)
+#define SYNC _IO(0xcc,3)
+#define FLUSH _IO(0xcc,4)
+#define GRAPHICS_ON 1
+#define GRAPHICS_OFF 0
 
 struct u_kyouko2_device {
 	unsigned int *u_control_base;
@@ -47,7 +39,7 @@ kyouko2_dma_hdr dma_hdr = {
 	.has_c4 = 0,
 	.unused = 0,
 	.prim_type = 1,
-	.count = 3,
+	.count = 90,
 	.opcode = 0x14
 };
 
@@ -97,8 +89,38 @@ void draw_fifo(void){
 	U_WRITE_REG(RASTER_PRIMITIVE, 0);
 }
 
+float randPos(){
+	//srand(time(NULL));
+	return 2*((float)rand()/(float)RAND_MAX) - 1;
+}
+
+float randColor(){
+	//srand(time(NULL));
+	return (float)rand()/(float)RAND_MAX;
+}
+
 void triangle(void){
-	float color[3][4] = {
+	struct vertice{
+		float color[3][3];
+		float pos[3][3];
+	};
+	struct vertice vertices[50];
+	unsigned int i, j, k;
+	for(k=0; k<30; ++k){
+		for(i=0; i<3; ++i){
+			for(j=0; j<3; ++j){
+				vertices[k].color[i][j] = randColor();
+				vertices[k].pos[i][j] = randPos();
+			}
+		}
+	}
+
+	/*  struct vertice vertices[] = {
+		{{{0.3,0.4,0.2},{0.6,0.5,0.9},{0.1,0.3,0.5}},{{0.6,0.2,0},{0.4,0.3,0},{-0.5,0.4,0}}},
+		{{{0.1,0.1,0.1},{0.5,0.4,0.5},{0.8,0.8,0.8}},{{0.2,0.1,0},{0.4,0.6,0},{0.5,-0.5,0}}},
+		{0}
+	};*/
+/*	float color[3][4] = {
 		0.3, 0.4, 0.5, 1.0,
 		0.8,0.1,0.4,1.0,
 		0.2,0.9,0.4,1.0};
@@ -107,19 +129,23 @@ void triangle(void){
 		-0.3,0.1,0.0,1.0,
 		0.2,0.4,0.0,1.0,
 		0.8,-0.5,0.0,1.0};
-	unsigned int i, j;
+		*/
 	countByte = 0;
 	unsigned int* buf = (unsigned int*)(arg);
-	//buf[countByte++] = *(unsigned int*)&dma_hdr;
+	buf[countByte++] = *(unsigned int*)&dma_hdr;
+	for(k=0; k<30; ++k){
 	for(i=0; i<3; ++i){
 		for(j=0; j<3; ++j){
-			buf[countByte++] = *(unsigned int*)&color[i][j];
+		//	buf[countByte++] = *(unsigned int*)&color[i][j];
+			buf[countByte++] = *(unsigned int*)&(vertices[k].color[i][j]);
 		}
 	}
 	for(i=0; i<3; ++i){
 		for(j=0; j<3; ++j){
-			buf[countByte++] = *(unsigned int*)&position[i][j];
+			//buf[countByte++] = *(unsigned int*)&position[i][j];
+			buf[countByte++] = *(unsigned int*)&(vertices[k].pos[i][j]);
 		}
+	}
 	}
 }
 
@@ -136,7 +162,7 @@ int main(){
 	kyouko2.u_fb_base = mmap(0,ramSize, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0x80000000);
 
 	//draw red line
-	///ioctl(fd,VMODE,GRAPHICS_ON);
+	ioctl(fd,VMODE,GRAPHICS_ON);
 	ioctl(fd,SYNC);
 	//u_sync();
 	for(i=200*1024; i<201*1024;i++){
@@ -148,18 +174,26 @@ int main(){
 	U_WRITE_REG(RASTER_FLUSH,1);
 	ioctl(fd,SYNC);
 	//u_sync();
-	sleep(3);
 	ioctl(fd,BIND_DMA,&arg);
 	ioctl(fd,SYNC);
-	printf("user buffer address %lx\n", arg);
+	//printf("user buffer address %lx\n", arg);
 	triangle();
+	//ioctl(fd,SYNC);
+	//sleep(3);
+	//U_WRITE_REG(RASTER_EMIT,0);
+
+	//U_WRITE_REG(RASTER_FLUSH,1);
 	arg = countByte; //test
 	printf("number of byte user level is : %d\n", countByte);
+	ioctl(fd,SYNC);
 	ioctl(fd,START_DMA,&arg);
+	//sleep(1);
+	U_WRITE_REG(RASTER_FLUSH,1);
+	sleep(3);
 	ioctl(fd,SYNC);
 	printf("buffer address %lx\n", arg);
-	///ioctl(fd,VMODE,GRAPHICS_OFF);
-	//U_WRITE_REG(CFG_REBOOT,1);
+	ioctl(fd,VMODE,GRAPHICS_OFF);
+	U_WRITE_REG(CFG_REBOOT,1);
 	close(fd);
 	return 0;
 }
