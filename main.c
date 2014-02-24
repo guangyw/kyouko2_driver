@@ -132,7 +132,9 @@ void triangle(void){
 		*/
 	countByte = 0;
 	unsigned int* buf = (unsigned int*)(arg);
+	printf("writing buffer header\n");
 	buf[countByte++] = *(unsigned int*)&dma_hdr;
+	printf("filling buffer\n");
 	for(k=0; k<30; ++k){
 	for(i=0; i<3; ++i){
 		for(j=0; j<3; ++j){
