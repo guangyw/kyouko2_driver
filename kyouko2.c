@@ -31,6 +31,9 @@
 #include <asm/mman.h>
 #include <linux/io.h>
 #include <linux/spinlock.h>
+#include <linux/interrupt.h>
+#include <linux/wait.h>
+#include <linux/errno.h>
 
 #include "kyouko2_ioctl.h"
 #include "kyouko2_reg.h"
