@@ -51,7 +51,7 @@
 DECLARE_WAIT_QUEUE_HEAD(dma_snooze);
 static spinlock_t lock;
 static unsigned long flags;
-bool dma_mmap_flag = false;
+//bool dma_mmap_flag = false;
 
 MODULE_LICENSE("Proprietary");
 MODULE_AUTHOR("Guangyan Wang");
