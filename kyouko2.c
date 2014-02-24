@@ -249,7 +249,7 @@ long kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
 				dma_buffers[i].k_base_addr = pci_alloc_consistent(kyouko2.pci_dev,BUFFER_SIZE,&dma_buffers[i].dma_handle);
 				printk(KERN_ALERT "k_base_addr %lx", dma_buffers[i].k_base_addr);
 				buffer_status.cur = i;
-				dma_buffers[i].u_base_addr = do_mmap(filp,dma_buffers[i].dma_handle,BUFFER_SIZE,PROT_READ|PROT_WRITE,MAP_SHARED,0x10000000);
+				dma_buffers[i].u_base_addr = do_mmap(filp,0,BUFFER_SIZE,PROT_READ|PROT_WRITE,MAP_SHARED,0x10000000);
 				//dma_buffers[i].u_base_addr = do_mmap(filp,0,BUFFER_SIZE,PROT_READ|PROT_WRITE,MAP_SHARED,0x0);
 				printk(KERN_ALERT "u_base_addr %lx",dma_buffers[i].u_base_addr);
 				dma_buffers[i].count = 0;
