@@ -18,10 +18,11 @@
 
 #include <linux/ioctl.h>
 
-#define VMODE _IOW(0xCC, 0, unsigned long)
-#define BIND_DMA _IOW(0xCC, 1, unsigned long)
-#define START_DMA _IOWR(0xCC, 2, unsigned long)
-#define SYNC _IO(0xCC, 3)
+#define VMODE _IOW(0xcc,0,unsigned long)
+#define BIND_DMA _IOW(0xcc,1,unsigned long)
+#define START_DMA _IOWR(0xcc,2,unsigned long)
+#define SYNC _IO(0xcc,3)
+#define FLUSH _IO(0xcc,4)
+#define GRAPHICS_ON 1
+#define GRAPHICS_OFF 0
 
-#define GRAPHICS_ON _IOW(0xCC, 4, unsigned long)
-#define GRAPHICS_OFF _IOW(0xCC, 5, unsigned long)
