@@ -116,14 +116,12 @@ int kyouko2_mmap(struct file *filp, struct vm_area_struct *vma){
 	int vma_size;
 	vma_size = vma->vm_end - vma->vm_start;
 	//printk(KERN_ALERT "vma page offset is : %x\n", vma->vm_pgoff);
-	if (dma_mmap_flag == false){
 	if (vma->vm_pgoff == 0x0){
 		printk(KERN_ALERT "mmapping control base address\n");
 		io_remap_pfn_range(vma, vma->vm_start, kyouko2.p_control_base>>PAGE_SHIFT, vma_size, vma->vm_page_prot);
 	}else if (vma->vm_pgoff == 0x80000){
 		printk(KERN_ALERT "mmapping frame buffer base address\n");
 		io_remap_pfn_range(vma, vma->vm_start, kyouko2.p_fb_base>>PAGE_SHIFT, vma_size, vma->vm_page_prot);
-	}
 	}else{
 		printk(KERN_ALERT "dma handle is: %lx\n", dma_buffers[buffer_status.cur].dma_handle);
 		io_remap_pfn_range(vma, vma->vm_start, dma_buffers[buffer_status.cur].dma_handle, vma_size, vma->vm_page_prot);
@@ -246,17 +244,17 @@ long kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
 
 		case BIND_DMA:
 			printk(KERN_ALERT "IN BINDING DMA\n");
-			dma_mmap_flag = true;
+			//dma_mmap_flag = true;
 			for(i=0; i < NUM_BUFFER; ++i){
 				dma_buffers[i].k_base_addr = pci_alloc_consistent(kyouko2.pci_dev,BUFFER_SIZE,&dma_buffers[i].dma_handle);
 				printk(KERN_ALERT "k_base_addr %lx", dma_buffers[i].k_base_addr);
 				buffer_status.cur = i;
-				//dma_buffers[i].u_base_addr = do_mmap(filp,0,BUFFER_SIZE,PROT_READ|PROT_WRITE,MAP_SHARED,0x10000000);
-				dma_buffers[i].u_base_addr = do_mmap(filp,0,BUFFER_SIZE,PROT_READ|PROT_WRITE,MAP_SHARED,0x0);
+				dma_buffers[i].u_base_addr = do_mmap(filp,0,BUFFER_SIZE,PROT_READ|PROT_WRITE,MAP_SHARED,0x10000000);
+				//dma_buffers[i].u_base_addr = do_mmap(filp,0,BUFFER_SIZE,PROT_READ|PROT_WRITE,MAP_SHARED,0x0);
 				printk(KERN_ALERT "u_base_addr %lx",dma_buffers[i].u_base_addr);
 				dma_buffers[i].count = 0;
 			}
-			dma_mmap_flag = false;
+			//dma_mmap_flag = false;
 			//enable message interrupt
 			pci_enable_msi(kyouko2.pci_dev);
 			result = request_irq(kyouko2.pci_dev->irq,(irq_handler_t)dma_intr,IRQF_SHARED|IRQF_DISABLED,"dma_intr",&kyouko2);
