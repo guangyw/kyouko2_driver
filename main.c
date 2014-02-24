@@ -178,7 +178,7 @@ int main(){
 	//u_sync();
 	ioctl(fd,BIND_DMA,&arg);
 	ioctl(fd,SYNC);
-	//printf("user buffer address %lx\n", arg);
+	printf("user buffer address %lx\n", arg);
 	triangle();
 	//ioctl(fd,SYNC);
 	//sleep(3);
@@ -189,6 +189,7 @@ int main(){
 	printf("number of byte user level is : %d\n", countByte);
 	ioctl(fd,SYNC);
 	ioctl(fd,START_DMA,&arg);
+	printf("done first start_dma\n");
 	//sleep(1);
 	U_WRITE_REG(RASTER_FLUSH,1);
 	sleep(3);
