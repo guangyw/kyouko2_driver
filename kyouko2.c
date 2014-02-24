@@ -124,7 +124,7 @@ int kyouko2_mmap(struct file *filp, struct vm_area_struct *vma){
 		io_remap_pfn_range(vma, vma->vm_start, kyouko2.p_fb_base>>PAGE_SHIFT, vma_size, vma->vm_page_prot);
 	}else{
 		printk(KERN_ALERT "dma handle is: %lx\n", dma_buffers[buffer_status.cur].dma_handle);
-		io_remap_pfn_range(vma, vma->vm_start, dma_buffers[buffer_status.cur].dma_handle, vma_size, vma->vm_page_prot);
+		io_remap_pfn_range(vma, vma->vm_start, (dma_buffers[buffer_status.cur].dma_handle)>>PAGE_SHIFT, vma_size, vma->vm_page_prot);
 	}
 	return 0;
 }
