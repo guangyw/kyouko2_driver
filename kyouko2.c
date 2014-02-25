@@ -253,7 +253,7 @@ long kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
 			//dma_mmap_flag = true;
 			//lock this!
 			spin_lock_irqsave(&kyouko2.mmap_lock,kyouko2.flags);
-			if (dma_flag == 0){
+			if (kyouko2.dma_flag == 0){
 				for(i=0; i < NUM_BUFFER; ++i){
 					dma_buffers[i].k_base_addr = pci_alloc_consistent(kyouko2.pci_dev,BUFFER_SIZE,&dma_buffers[i].dma_handle);
 					printk(KERN_ALERT "k_base_addr %lx", dma_buffers[i].k_base_addr);
@@ -263,7 +263,7 @@ long kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
 					printk(KERN_ALERT "u_base_addr %lx",dma_buffers[i].u_base_addr);
 					dma_buffers[i].count = 0;
 				}
-				dma_flag = 1;
+				kyouko2.dma_flag = 1;
 			}
 			spin_unlock_irqrestore(&kyouko2.mmap_lock,kyouko2.flags);
 			//dma_mmap_flag = false;
