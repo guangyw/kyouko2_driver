@@ -251,6 +251,7 @@ long kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
 
 		case BIND_DMA:
 			printk(KERN_ALERT "IN BINDING DMA\n");
+			/*
 			//dma_mmap_flag = true;
 			//lock this!
 			spin_lock_irqsave(&kyouko2.mmap_lock,kyouko2.mmlock_flags);
@@ -268,13 +269,15 @@ long kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
 			}
 			spin_unlock_irqrestore(&kyouko2.mmap_lock,kyouko2.mmlock_flags);
 			//dma_mmap_flag = false;
+			*/
 			//enable message interrupt
 			pci_enable_msi(kyouko2.pci_dev);
 			result = request_irq(kyouko2.pci_dev->irq,(irq_handler_t)dma_intr,IRQF_SHARED|IRQF_DISABLED,"dma_intr",&kyouko2);
 			K_WRITE_REG(CFG_INTERRUPT,0x02);
 
-			kyouko2.fill = 0;
+			/*kyouko2.fill = 0;
 			kyouko2.drain = 0;
+			*/
 			copy_to_user((unsigned long*)arg, &dma_buffers[kyouko2.fill].u_base_addr, sizeof(unsigned long));
 			break;
 		default:
@@ -336,6 +339,18 @@ static int kyouko2_init(void){
 	flag = pci_register_driver(&kyouko2_pci_drv);
 	printk(KERN_ALERT "Initialized Device\n");
 	kyouko2.dma_flag = 0;
+	for(i=0; i < NUM_BUFFER; ++i){
+		dma_buffers[i].k_base_addr = pci_alloc_consistent(kyouko2.pci_dev,BUFFER_SIZE,&dma_buffers[i].dma_handle);
+		printk(KERN_ALERT "k_base_addr %lx", dma_buffers[i].k_base_addr);
+		kyouko2.fill = i;
+		dma_buffers[i].u_base_addr = do_mmap(filp,0,BUFFER_SIZE,PROT_READ|PROT_WRITE,MAP_SHARED,0x10000000);
+		//dma_buffers[i].u_base_addr = do_mmap(filp,0,BUFFER_SIZE,PROT_READ|PROT_WRITE,MAP_SHARED,0x0);
+		printk(KERN_ALERT "u_base_addr %lx",dma_buffers[i].u_base_addr);
+		dma_buffers[i].count = 0;
+	}
+	kyouko2.fill = 0;
+	kyouko2.drain = 0;
+
 	return 0;
 }
 
