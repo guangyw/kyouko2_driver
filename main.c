@@ -32,17 +32,6 @@ typedef struct{
 	unsigned int opcode:8;
 }kyouko2_dma_hdr;
 
-kyouko2_dma_hdr dma_hdr = {
-	.stride = 5,
-	.has_v4 = 0,
-	.has_c3 = 1,
-	.has_c4 = 0,
-	.unused = 0,
-	.prim_type = 1,
-	.count = 90,
-	.opcode = 0x14
-};
-
 #define	KYOUKO_CONTROL_SIZE (65536)			/*  */
 #define	Device_Ram (0x0020)			/*  */
 unsigned long arg;
@@ -104,6 +93,19 @@ void triangle(void){
 		float color[3][3];
 		float pos[3][3];
 	};
+
+	kyouko2_dma_hdr dma_hdr = {
+		.stride = 5,
+		.has_v4 = 0,
+		.has_c3 = 1,
+		.has_c4 = 0,
+		.unused = 0,
+		.prim_type = 1,
+		.count = 90,
+		.opcode = 0x14
+	};
+
+
 	struct vertice vertices[50];
 	unsigned int i, j, k;
 	for(k=0; k<30; ++k){
@@ -114,22 +116,6 @@ void triangle(void){
 			}
 		}
 	}
-
-	/*  struct vertice vertices[] = {
-		{{{0.3,0.4,0.2},{0.6,0.5,0.9},{0.1,0.3,0.5}},{{0.6,0.2,0},{0.4,0.3,0},{-0.5,0.4,0}}},
-		{{{0.1,0.1,0.1},{0.5,0.4,0.5},{0.8,0.8,0.8}},{{0.2,0.1,0},{0.4,0.6,0},{0.5,-0.5,0}}},
-		{0}
-	};*/
-/*	float color[3][4] = {
-		0.3, 0.4, 0.5, 1.0,
-		0.8,0.1,0.4,1.0,
-		0.2,0.9,0.4,1.0};
-
-	float position[3][4] = {
-		-0.3,0.1,0.0,1.0,
-		0.2,0.4,0.0,1.0,
-		0.8,-0.5,0.0,1.0};
-		*/
 	countByte = 0;
 	unsigned int* buf = (unsigned int*)(arg);
 	printf("writing buffer header\n");
@@ -148,6 +134,50 @@ void triangle(void){
 			buf[countByte++] = *(unsigned int*)&(vertices[k].pos[i][j]);
 		}
 	}
+	}
+}
+
+void writeTwoTriangleToBuffer(void){
+	kyouko2_dma_hdr dma_hdr = {
+		.stride = 5,
+		.has_v4 = 0,
+		.has_c3 = 1,
+		.has_c4 = 0,
+		.unused = 0,
+		.prim_type = 1,
+		.count = 6,
+		.opcode = 0x14
+	};
+	struct vertice{
+		float color[3][3];
+		float pos[3][3];
+	};
+	struct vertice vertices[2];
+	unsigned int i, j, k;
+	for(k=0; k<2; ++k){
+		for(i=0; i<3; ++i){
+			for(j=0; j<3; ++j){
+				vertices[k].color[i][j] = randColor();
+				vertices[k].pos[i][j] = randPos();
+			}
+		}
+	}
+	countByte = 0;
+	unsigned int* buf = (unsigned int*)(arg);
+	printf("writing buffer header\n");
+	buf[countByte++] = *(unsigned int*)&dma_hdr;
+	printf("filling buffer\n");
+	for(k=0; k<30; ++k){
+		for(i=0; i<3; ++i){
+			for(j=0; j<3; ++j){
+				buf[countByte++] = *(unsigned int*)&(vertices[k].color[i][j]);
+			}
+		}
+		for(i=0; i<3; ++i){
+			for(j=0; j<3; ++j){
+				buf[countByte++] = *(unsigned int*)&(vertices[k].pos[i][j]);
+			}
+		}
 	}
 }
 
@@ -179,7 +209,8 @@ int main(){
 	ioctl(fd,BIND_DMA,&arg);
 	ioctl(fd,SYNC);
 	printf("user buffer address %lx\n", arg);
-	triangle();
+	//triangle();
+
 	//ioctl(fd,SYNC);
 	//sleep(3);
 	//U_WRITE_REG(RASTER_EMIT,0);
