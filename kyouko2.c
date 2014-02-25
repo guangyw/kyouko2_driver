@@ -132,8 +132,8 @@ int kyouko2_mmap(struct file *filp, struct vm_area_struct *vma){
 		printk(KERN_ALERT "mmapping frame buffer base address\n");
 		io_remap_pfn_range(vma, vma->vm_start, kyouko2.p_fb_base>>PAGE_SHIFT, vma_size, vma->vm_page_prot);
 	}else{
-		printk(KERN_ALERT "dma handle is: %lx\n", dma_buffers[kyouko2.cur].dma_handle);
-		io_remap_pfn_range(vma, vma->vm_start, (dma_buffers[kyouko2.cur].dma_handle)>>PAGE_SHIFT, vma_size, vma->vm_page_prot);
+		printk(KERN_ALERT "dma handle is: %lx\n", dma_buffers[kyouko2.fill].dma_handle);
+		io_remap_pfn_range(vma, vma->vm_start, (dma_buffers[kyouko2.fill].dma_handle)>>PAGE_SHIFT, vma_size, vma->vm_page_prot);
 	}
 	return 0;
 }
@@ -148,26 +148,26 @@ irqreturn_t dma_intr(int irq, void *dev_id, struct pt_regs *regs){
 	K_WRITE_REG(STATUS,0xF);
 	if(flags & 0x02 == 0)
 		return (IRQ_NONE);
-	spin_lock_irqsave(&lock, kyouko2.flags);
+	spin_lock_irqsave(&kyouko2.lock, kyouko2.flags);
 	if(kyouko2.fill == kyouko2.drain){
 		wake_up_interruptible(&dma_snooze);
 	}
 	kyouko2.drain = (kyouko2.drain + 1) % NUM_BUFFER;
 	K_WRITE_REG(BUFFERA_ADDR, dma_buffers[kyouko2.drain].dma_handle);
 	K_WRITE_REG(BUFFERA_CONFIG, dma_buffers[kyouko2.drain].count);
-	spin_unlock_irqrestore(&lock, kyouko2.flags);
+	spin_unlock_irqrestore(&kyouko2.lock, kyouko2.flags);
 	return (IRQ_HANDLED);
 }
 
 void initiate_transfer(void){
 	//local irq need to be replaced by spinlock
 	bool fill_flag = false;
-	spin_lock_irqsave(&lock,flags);
+	spin_lock_irqsave(&kyouko2.lock,flags);
 	//local_irq_save(flag);
 	if(kyouko2.fill == kyouko2.drain){
 		//local_irq_restore(flag);
 		kyouko2.fill = (kyouko2.fill+1)%NUM_BUFFER;
-		spin_unlock_irqrestore(&lock,flags);
+		spin_unlock_irqrestore(&kyouko2.lock,flags);
 		K_WRITE_REG(BUFFERA_ADDR, dma_buffers[kyouko2.drain].dma_handle);
 		K_WRITE_REG(BUFFERA_CONFIG, dma_buffers[kyouko2.drain].count);
 		return;
@@ -176,7 +176,7 @@ void initiate_transfer(void){
 	if(kyouko2.fill == kyouko2.drain){
 		fill_flag = true;
 	}
-	spin_unlock_irqrestore(&lock,flags);
+	spin_unlock_irqrestore(&kyouko2.lock,flags);
 	wait_event_interruptible(dma_snooze, fill_flag == false);
 	//local_irq_restore(flag);
 	return;
@@ -252,12 +252,12 @@ long kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
 			printk(KERN_ALERT "IN BINDING DMA\n");
 			//dma_mmap_flag = true;
 			//lock this!
-			spin_lock_irqsave(&mmap_lock,kyouko2.flags);
+			spin_lock_irqsave(&kyouko2.mmap_lock,kyouko2.flags);
 			if (dma_flag == 0){
 				for(i=0; i < NUM_BUFFER; ++i){
 					dma_buffers[i].k_base_addr = pci_alloc_consistent(kyouko2.pci_dev,BUFFER_SIZE,&dma_buffers[i].dma_handle);
 					printk(KERN_ALERT "k_base_addr %lx", dma_buffers[i].k_base_addr);
-					kyouko2.cur = i;
+					kyouko2.fill = i;
 					dma_buffers[i].u_base_addr = do_mmap(filp,0,BUFFER_SIZE,PROT_READ|PROT_WRITE,MAP_SHARED,0x10000000);
 					//dma_buffers[i].u_base_addr = do_mmap(filp,0,BUFFER_SIZE,PROT_READ|PROT_WRITE,MAP_SHARED,0x0);
 					printk(KERN_ALERT "u_base_addr %lx",dma_buffers[i].u_base_addr);
@@ -265,7 +265,7 @@ long kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
 				}
 				dma_flag = 1;
 			}
-			spin_unlock_irqrestore(&mmap_lock,kyouko2.flags);
+			spin_unlock_irqrestore(&kyouko2.mmap_lock,kyouko2.flags);
 			//dma_mmap_flag = false;
 			//enable message interrupt
 			pci_enable_msi(kyouko2.pci_dev);
