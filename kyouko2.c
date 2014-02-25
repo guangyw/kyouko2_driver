@@ -333,6 +333,7 @@ struct pci_driver kyouko2_pci_drv = {
 struct cdev kyouko2_cdev;
 static int kyouko2_init(void){
 	int flag;
+	int i;
 	cdev_init(&kyouko2_cdev, &kyouko2_fops);
 	kyouko2_cdev.owner = THIS_MODULE;
 	cdev_add(&kyouko2_cdev, MKDEV(DEV_MAJOR, DEV_MINOR), 1);
