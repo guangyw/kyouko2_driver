@@ -194,7 +194,7 @@ int main(){
 	kyouko2.u_fb_base = mmap(0,ramSize, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0x80000000);
 
 	//draw red line
-	ioctl(fd,VMODE,GRAPHICS_ON);
+	//ioctl(fd,VMODE,GRAPHICS_ON);
 	ioctl(fd,SYNC);
 	//u_sync();
 	for(i=200*1024; i<201*1024;i++){
@@ -227,7 +227,7 @@ int main(){
 	sleep(3);
 	ioctl(fd,SYNC);
 	printf("buffer address %lx\n", arg);
-	ioctl(fd,VMODE,GRAPHICS_OFF);
+	//ioctl(fd,VMODE,GRAPHICS_OFF);
 	U_WRITE_REG(CFG_REBOOT,1);
 	close(fd);
 	return 0;
