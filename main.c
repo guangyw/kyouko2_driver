@@ -209,8 +209,9 @@ int main(){
 	ioctl(fd,BIND_DMA,&arg);
 	ioctl(fd,SYNC);
 	printf("user buffer address %lx\n", arg);
-	//triangle();
-
+	triangle();
+	//writeTwoTriangleToBuffer();
+	//ioctl(fd,START_DMA,&arg);
 	//ioctl(fd,SYNC);
 	//sleep(3);
 	//U_WRITE_REG(RASTER_EMIT,0);
