@@ -162,12 +162,12 @@ irqreturn_t dma_intr(int irq, void *dev_id, struct pt_regs *regs){
 void initiate_transfer(void){
 	//local irq need to be replaced by spinlock
 	bool fill_flag = false;
-	spin_lock_irqsave(&kyouko2.lock,flags);
+	spin_lock_irqsave(&kyouko2.lock,kyouko2.flags);
 	//local_irq_save(flag);
 	if(kyouko2.fill == kyouko2.drain){
 		//local_irq_restore(flag);
 		kyouko2.fill = (kyouko2.fill+1)%NUM_BUFFER;
-		spin_unlock_irqrestore(&kyouko2.lock,flags);
+		spin_unlock_irqrestore(&kyouko2.lock,kyouko2.flags);
 		K_WRITE_REG(BUFFERA_ADDR, dma_buffers[kyouko2.drain].dma_handle);
 		K_WRITE_REG(BUFFERA_CONFIG, dma_buffers[kyouko2.drain].count);
 		return;
@@ -176,7 +176,7 @@ void initiate_transfer(void){
 	if(kyouko2.fill == kyouko2.drain){
 		fill_flag = true;
 	}
-	spin_unlock_irqrestore(&kyouko2.lock,flags);
+	spin_unlock_irqrestore(&kyouko2.lock,kyouko2.flags);
 	wait_event_interruptible(dma_snooze, fill_flag == false);
 	//local_irq_restore(flag);
 	return;
