@@ -74,6 +74,7 @@ static struct kyouko{
 	unsigned int dma_flag;//flags to ensure dma buffer is mmaped only once
 	unsigned long flags; //spin lock flags
 	spinlock_t mmap_lock;
+	unsigned long mmlock_flags;
 }kyouko2;
 
 struct dma_buffer{
@@ -252,7 +253,7 @@ long kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
 			printk(KERN_ALERT "IN BINDING DMA\n");
 			//dma_mmap_flag = true;
 			//lock this!
-			spin_lock_irqsave(&kyouko2.mmap_lock,kyouko2.flags);
+			spin_lock_irqsave(&kyouko2.mmap_lock,kyouko2.mmlock_flags);
 			if (kyouko2.dma_flag == 0){
 				for(i=0; i < NUM_BUFFER; ++i){
 					dma_buffers[i].k_base_addr = pci_alloc_consistent(kyouko2.pci_dev,BUFFER_SIZE,&dma_buffers[i].dma_handle);
@@ -265,7 +266,7 @@ long kyouko2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg){
 				}
 				kyouko2.dma_flag = 1;
 			}
-			spin_unlock_irqrestore(&kyouko2.mmap_lock,kyouko2.flags);
+			spin_unlock_irqrestore(&kyouko2.mmap_lock,kyouko2.mmlock_flags);
 			//dma_mmap_flag = false;
 			//enable message interrupt
 			pci_enable_msi(kyouko2.pci_dev);
