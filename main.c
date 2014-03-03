@@ -171,7 +171,7 @@ int main(){
 		ioctl(fd,SYNC);
 		ioctl(fd,START_DMA,&arg);
 		//sleep(1);
-		//U_WRITE_REG(RASTER_FLUSH,1);
+		U_WRITE_REG(RASTER_FLUSH,1);
 		ioctl(fd,SYNC);
 		//printf("after dma buffer address %lx\n", arg);
 	}
