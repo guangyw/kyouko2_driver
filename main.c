@@ -32,6 +32,17 @@ typedef struct{
 	unsigned int opcode:8;
 }kyouko2_dma_hdr;
 
+kyouko2_dma_hdr dma_hdr = {
+	.stride = 5,
+	.has_v4 = 0,
+	.has_c3 = 1,
+	.has_c4 = 0,
+	.unused = 0,
+	.prim_type = 1,
+	.count = 30,
+	.opcode = 0x14
+};
+
 #define	KYOUKO_CONTROL_SIZE (65536)			/*  */
 #define	Device_Ram (0x0020)			/*  */
 unsigned long arg;
@@ -93,22 +104,9 @@ void triangle(void){
 		float color[3][3];
 		float pos[3][3];
 	};
-
-	kyouko2_dma_hdr dma_hdr = {
-		.stride = 5,
-		.has_v4 = 0,
-		.has_c3 = 1,
-		.has_c4 = 0,
-		.unused = 0,
-		.prim_type = 1,
-		.count = 90,
-		.opcode = 0x14
-	};
-
-
 	struct vertice vertices[50];
 	unsigned int i, j, k;
-	for(k=0; k<30; ++k){
+	for(k=0; k<10; ++k){
 		for(i=0; i<3; ++i){
 			for(j=0; j<3; ++j){
 				vertices[k].color[i][j] = randColor();
@@ -116,65 +114,22 @@ void triangle(void){
 			}
 		}
 	}
-	countByte = 0;
-	unsigned int* buf = (unsigned int*)(arg);
-	printf("writing buffer header\n");
-	buf[countByte++] = *(unsigned int*)&dma_hdr;
-	printf("filling buffer\n");
-	for(k=0; k<30; ++k){
-	for(i=0; i<3; ++i){
-		for(j=0; j<3; ++j){
-		//	buf[countByte++] = *(unsigned int*)&color[i][j];
-			buf[countByte++] = *(unsigned int*)&(vertices[k].color[i][j]);
-		}
-	}
-	for(i=0; i<3; ++i){
-		for(j=0; j<3; ++j){
-			//buf[countByte++] = *(unsigned int*)&position[i][j];
-			buf[countByte++] = *(unsigned int*)&(vertices[k].pos[i][j]);
-		}
-	}
-	}
-}
 
-void writeTwoTriangleToBuffer(void){
-	kyouko2_dma_hdr dma_hdr = {
-		.stride = 5,
-		.has_v4 = 0,
-		.has_c3 = 1,
-		.has_c4 = 0,
-		.unused = 0,
-		.prim_type = 1,
-		.count = 6,
-		.opcode = 0x14
-	};
-	struct vertice{
-		float color[3][3];
-		float pos[3][3];
-	};
-	struct vertice vertices[2];
-	unsigned int i, j, k;
-	for(k=0; k<2; ++k){
-		for(i=0; i<3; ++i){
-			for(j=0; j<3; ++j){
-				vertices[k].color[i][j] = randColor();
-				vertices[k].pos[i][j] = randPos();
-			}
-		}
-	}
 	countByte = 0;
 	unsigned int* buf = (unsigned int*)(arg);
-	printf("writing buffer header\n");
+	//printf("writing buffer header\n");
 	buf[countByte++] = *(unsigned int*)&dma_hdr;
-	printf("filling buffer\n");
-	for(k=0; k<30; ++k){
+	//printf("filling buffer\n");
+	for(k=0; k<10; ++k){
 		for(i=0; i<3; ++i){
 			for(j=0; j<3; ++j){
+			//	buf[countByte++] = *(unsigned int*)&color[i][j];
 				buf[countByte++] = *(unsigned int*)&(vertices[k].color[i][j]);
 			}
 		}
 		for(i=0; i<3; ++i){
 			for(j=0; j<3; ++j){
+				//buf[countByte++] = *(unsigned int*)&position[i][j];
 				buf[countByte++] = *(unsigned int*)&(vertices[k].pos[i][j]);
 			}
 		}
@@ -208,25 +163,18 @@ int main(){
 	//u_sync();
 	ioctl(fd,BIND_DMA,&arg);
 	ioctl(fd,SYNC);
-	printf("user buffer address %lx\n", arg);
-	triangle();
-	//writeTwoTriangleToBuffer();
-	//ioctl(fd,START_DMA,&arg);
-	//ioctl(fd,SYNC);
-	//sleep(3);
-	//U_WRITE_REG(RASTER_EMIT,0);
-
-	//U_WRITE_REG(RASTER_FLUSH,1);
-	arg = countByte; //test
-	printf("number of byte user level is : %d\n", countByte);
-	ioctl(fd,SYNC);
-	ioctl(fd,START_DMA,&arg);
-	printf("done first start_dma\n");
-	//sleep(1);
-	U_WRITE_REG(RASTER_FLUSH,1);
-	sleep(3);
-	ioctl(fd,SYNC);
-	printf("buffer address %lx\n", arg);
+	for (i = 0; i < 10; i++) {
+		//printf("before dma  buffer address %lx\n", arg);
+		triangle();
+		arg = countByte; //test
+		//printf("number of byte user level is : %d\n", countByte);
+		ioctl(fd,SYNC);
+		ioctl(fd,START_DMA,&arg);
+		//sleep(1);
+		//U_WRITE_REG(RASTER_FLUSH,1);
+		ioctl(fd,SYNC);
+		//printf("after dma buffer address %lx\n", arg);
+	}
 	ioctl(fd,VMODE,GRAPHICS_OFF);
 	U_WRITE_REG(CFG_REBOOT,1);
 	close(fd);
