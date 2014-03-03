@@ -39,7 +39,7 @@ kyouko2_dma_hdr dma_hdr = {
 	.has_c4 = 0,
 	.unused = 0,
 	.prim_type = 1,
-	.count = 30,
+	.count = 3,
 	.opcode = 0x14
 };
 
@@ -104,9 +104,9 @@ void triangle(void){
 		float color[3][3];
 		float pos[3][3];
 	};
-	struct vertice vertices[50];
+	struct vertice vertices[3];
 	unsigned int i, j, k;
-	for(k=0; k<10; ++k){
+	for(k=0; k<1; ++k){
 		for(i=0; i<3; ++i){
 			for(j=0; j<3; ++j){
 				vertices[k].color[i][j] = randColor();
@@ -175,6 +175,7 @@ int main(){
 		ioctl(fd,SYNC);
 		//printf("after dma buffer address %lx\n", arg);
 	}
+	sleep(2);
 	ioctl(fd,VMODE,GRAPHICS_OFF);
 	U_WRITE_REG(CFG_REBOOT,1);
 	close(fd);
