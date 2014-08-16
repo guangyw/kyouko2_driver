@@ -73,8 +73,6 @@ static struct kyouko{
 	unsigned int drain;
 	unsigned int dma_flag;//flags to ensure dma buffer is mmaped only once
 	unsigned long flags; //spin lock flags
-	//spinlock_t mmap_lock;
-	//unsigned long mmlock_flags;
 }kyouko2;
 
 struct dma_buffer{
@@ -83,14 +81,6 @@ struct dma_buffer{
 	dma_addr_t dma_handle;
 	unsigned int count;
 }dma_buffers[NUM_BUFFER];
-
-/*
-struct buffer_status{
-	unsigned int cur;
-	unsigned int fill;
-	unsigned int drain;
-}buffer_status;
-*/
 
 unsigned int K_READ_REG(unsigned int reg){
 	unsigned int value;
